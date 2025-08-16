@@ -1,0 +1,333 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Madarasatun Nisa'i Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!--
+    SETUP NOTES
+    1) Replace GOOGLE_SCRIPT_URL below with your deployed Apps Script Web App URL.
+    2) (Optional) Change ADMIN_PIN to your preferred PIN.
+    3) Sheet structure must match the provided template:
+       - Students: ID | Name | WhatsApp
+       - Attendance: ID | Name | WhatsApp | W1..W12
+  -->
+  <style>
+    /* Improve print layout for PDF */
+    @media print {
+      #loginPage, aside, nav button, .no-print { display: none !important; }
+      body { background: white; }
+      main { padding: 0; }
+      table { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen"><!-- 🔑 Login Page --><section id="loginPage" class="flex items-center justify-center h-screen">
+  <div class="bg-white p-8 rounded-lg shadow-md w-80 text-center">
+    <h2 class="text-2xl font-bold mb-4">Admin Login</h2>
+    <input type="password" id="pinInput" placeholder="Enter PIN"
+      class="w-full p-2 border rounded mb-4 text-center">
+    <button onclick="checkLogin()"
+      class="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+      Login
+    </button>
+    <p id="loginError" class="text-red-500 text-sm mt-2 hidden">Invalid PIN</p>
+  </div>
+</section><!-- 📊 Dashboard --><div id="dashboard" class="hidden">  <!-- Navbar -->  <nav class="bg-green-600 text-white px-6 py-3 flex justify-between items-center">
+    <div>
+      <h1 class="text-2xl font-bold">MADARASATUN NISA’I</h1>
+      <p class="text-sm">ILIMI HASKEN RAYUWA</p>
+    </div>
+    <div class="hidden md:block text-right text-sm">
+      <p>📧 ibrahimsadau6644@gmail.com</p>
+      <p>📞 07066144944 | 08035458742</p>
+    </div>
+    <div class="flex items-center gap-2">
+      <button onclick="window.print()" class="no-print bg-gray-800 px-3 py-1 rounded hover:bg-gray-900">Print/PDF</button>
+      <button onclick="logout()" class="no-print bg-red-500 px-3 py-1 rounded hover:bg-red-600">Logout</button>
+    </div>
+  </nav>  <!-- Layout -->  <div class="flex">
+    <!-- Sidebar -->
+    <aside class="w-60 bg-gray-800 text-white min-h-screen p-4 sticky top-0">
+      <ul class="space-y-3">
+        <li><button onclick="showPage('students')" class="w-full text-left hover:underline">📘 Students</button></li>
+        <li><button onclick="showPage('attendance')" class="w-full text-left hover:underline">🗓️ Attendance</button></li>
+        <li><button onclick="showPage('reports')" class="w-full text-left hover:underline">📊 Reports</button></li>
+      </ul>
+    </aside><!-- Main Content -->
+<main class="flex-1 p-6 space-y-8">
+  <!-- 👩‍🎓 Students Page -->
+  <section id="students" class="hidden">
+    <div class="flex flex-col md:flex-row md:items-end gap-2 md:gap-4 mb-4">
+      <div class="flex-1">
+        <label class="block text-sm font-medium mb-1">Full Name</label>
+        <input type="text" id="studentName" placeholder="Enter full name" required class="w-full p-2 border rounded">
+      </div>
+      <div class="flex-1">
+        <label class="block text-sm font-medium mb-1">WhatsApp Number</label>
+        <input type="text" id="studentWhatsApp" placeholder="e.g. 070xxxxxxx" required class="w-full p-2 border rounded">
+      </div>
+      <button onclick="addStudent(event)" class="px-4 py-2 bg-green-600 text-white rounded self-start md:self-auto">Add</button>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="min-w-full bg-white rounded shadow">
+        <thead class="bg-gray-200 sticky top-0"> 
+          <tr>
+            <th class="px-4 py-2 text-left">S/N</th>
+            <th class="px-4 py-2 text-left">Name</th>
+            <th class="px-4 py-2 text-left">WhatsApp</th>
+            <th class="px-4 py-2 text-left">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="studentsTable" class="divide-y">
+          <!-- rows injected here -->
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 🗓️ Attendance Page -->
+  <section id="attendance" class="hidden">
+    <h3 class="text-xl font-bold mb-4">Attendance Register</h3>
+    <div class="overflow-x-auto">
+      <table class="min-w-full bg-white rounded shadow text-sm">
+        <thead class="bg-gray-200 sticky top-0">
+          <tr>
+            <th class="px-2 py-1 text-left">S/N</th>
+            <th class="px-2 py-1 text-left">Name</th>
+            <th class="px-2 py-1 text-left">WhatsApp</th>
+            <th class="px-2 py-1">W1</th>
+            <th class="px-2 py-1">W2</th>
+            <th class="px-2 py-1">W3</th>
+            <th class="px-2 py-1">W4</th>
+            <th class="px-2 py-1">W5</th>
+            <th class="px-2 py-1">W6</th>
+            <th class="px-2 py-1">W7</th>
+            <th class="px-2 py-1">W8</th>
+            <th class="px-2 py-1">W9</th>
+            <th class="px-2 py-1">W10</th>
+            <th class="px-2 py-1">W11</th>
+            <th class="px-2 py-1">W12</th>
+          </tr>
+        </thead>
+        <tbody id="attendanceTable" class="divide-y">
+          <!-- rows injected here -->
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 📊 Reports Page -->
+  <section id="reports" class="hidden">
+    <h3 class="text-xl font-bold mb-4">Reports</h3>
+    <div class="mb-4 flex flex-wrap gap-2 no-print">
+      <button onclick="exportStudentsCSV()" class="px-4 py-2 bg-blue-500 text-white rounded">Export Students (CSV)</button>
+      <button onclick="exportAttendanceCSV()" class="px-4 py-2 bg-indigo-500 text-white rounded">Export Attendance (CSV)</button>
+      <button onclick="window.print()" class="px-4 py-2 bg-gray-700 text-white rounded">Print / Save as PDF</button>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="min-w-full bg-white rounded shadow">
+        <thead class="bg-gray-200 sticky top-0">
+          <tr>
+            <th class="px-4 py-2 text-left">S/N</th>
+            <th class="px-4 py-2 text-left">Name</th>
+            <th class="px-4 py-2 text-left">WhatsApp</th>
+            <th class="px-4 py-2 text-left">Present (%)</th>
+            <th class="px-4 py-2 text-left">Sessions Counted</th>
+          </tr>
+        </thead>
+        <tbody id="reportTable" class="divide-y">
+          <!-- rows injected here -->
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+  </div>
+</div><script>
+// ===================== CONFIG =====================
+const GOOGLE_SCRIPT_URL = "YOUR_GOOGLE_SCRIPT_URL"; // <-- REPLACE
+const ADMIN_PIN = "1234"; // <-- change to your PIN
+
+// ===================== LOGIN =====================
+function checkLogin() {
+  const pin = document.getElementById('pinInput').value.trim();
+  if (pin === ADMIN_PIN) {
+    document.getElementById('loginPage').classList.add('hidden');
+    document.getElementById('dashboard').classList.remove('hidden');
+    showPage('students');
+  } else {
+    document.getElementById('loginError').classList.remove('hidden');
+  }
+}
+function logout() {
+  document.getElementById('dashboard').classList.add('hidden');
+  document.getElementById('loginPage').classList.remove('hidden');
+  document.getElementById('pinInput').value = '';
+}
+
+// ===================== NAVIGATION =====================
+function showPage(id) {
+  document.querySelectorAll('main section').forEach(sec => sec.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  if (id === 'students') loadStudents();
+  if (id === 'attendance') loadAttendance();
+  if (id === 'reports') loadReports();
+}
+
+// ===================== STUDENTS CRUD =====================
+async function addStudent(e) {
+  if (e && e.preventDefault) e.preventDefault();
+  const name = document.getElementById('studentName').value.trim();
+  const whatsapp = document.getElementById('studentWhatsApp').value.trim();
+  if (!name || !whatsapp) return;
+  await fetch(GOOGLE_SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ action: 'addStudent', name, whatsapp })
+  });
+  document.getElementById('studentName').value = '';
+  document.getElementById('studentWhatsApp').value = '';
+  loadStudents();
+}
+
+async function loadStudents() {
+  const res = await fetch(GOOGLE_SCRIPT_URL + '?sheet=Students');
+  const students = await res.json();
+  const tbody = document.getElementById('studentsTable');
+  tbody.innerHTML = '';
+  students.forEach((s, i) => {
+    const tr = document.createElement('tr');
+    tr.className = i % 2 === 0 ? 'bg-white' : 'bg-gray-50';
+    tr.innerHTML = `
+      <td class="px-4 py-2">${i + 1}</td>
+      <td class="px-4 py-2">${escapeHtml(s.name)}</td>
+      <td class="px-4 py-2">${escapeHtml(s.whatsapp)}</td>
+      <td class="px-4 py-2 space-x-2">
+        <button class="text-blue-600 hover:underline" onclick="editStudent('${s.id}', '${escapeAttr(s.name)}', '${escapeAttr(s.whatsapp)}')">✏️ Edit</button>
+        <button class="text-red-600 hover:underline" onclick="deleteStudent('${s.id}')">🗑️ Delete</button>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+async function editStudent(id, name, whatsapp) {
+  const newName = prompt('Edit name:', name);
+  if (newName === null) return; // cancelled
+  const newWhatsapp = prompt('Edit WhatsApp:', whatsapp);
+  if (newWhatsapp === null) return;
+  await fetch(GOOGLE_SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ action: 'editStudent', id, name: newName, whatsapp: newWhatsapp })
+  });
+  loadStudents();
+}
+
+async function deleteStudent(id) {
+  if (!confirm('Are you sure you want to delete this student?')) return;
+  await fetch(GOOGLE_SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ action: 'deleteStudent', id })
+  });
+  loadStudents();
+}
+
+// ===================== ATTENDANCE =====================
+async function loadAttendance() {
+  const res = await fetch(GOOGLE_SCRIPT_URL + '?sheet=Attendance');
+  const data = await res.json();
+  const tbody = document.getElementById('attendanceTable');
+  tbody.innerHTML = '';
+  data.forEach((s, i) => {
+    const tr = document.createElement('tr');
+    tr.className = i % 2 === 0 ? 'bg-white' : 'bg-gray-50';
+    let cells = `
+      <td class=\"px-2 py-1\">${i + 1}</td>
+      <td class=\"px-2 py-1\">${escapeHtml(s.name)}</td>
+      <td class=\"px-2 py-1\">${escapeHtml(s.whatsapp)}</td>`;
+    for (let w = 1; w <= 12; w++) {
+      const checked = s['week' + w] === 'P' ? 'checked' : '';
+      cells += `
+        <td class=\"px-2 py-1 text-center\">
+          <input type=\"checkbox\" ${checked} onchange=\"markAttendance('${s.id}', ${w}, this.checked)\">
+        </td>`;
+    }
+    tr.innerHTML = cells;
+    tbody.appendChild(tr);
+  });
+}
+
+async function markAttendance(id, week, present) {
+  await fetch(GOOGLE_SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ action: 'markAttendance', id, week, status: present ? 'P' : 'A' })
+  });
+}
+
+// ===================== REPORTS =====================
+async function loadReports() {
+  const res = await fetch(GOOGLE_SCRIPT_URL + '?sheet=Attendance');
+  const attendance = await res.json();
+  const tbody = document.getElementById('reportTable');
+  tbody.innerHTML = '';
+  attendance.forEach((s, i) => {
+    let total = 0, present = 0;
+    for (let w = 1; w <= 12; w++) {
+      const v = s['week' + w];
+      if (v === 'P' || v === 'A') total++;
+      if (v === 'P') present++;
+    }
+    const pct = total ? Math.round((present / total) * 100) : 0;
+    const tr = document.createElement('tr');
+    tr.className = i % 2 === 0 ? 'bg-white' : 'bg-gray-50';
+    tr.innerHTML = `
+      <td class="px-4 py-2">${i + 1}</td>
+      <td class="px-4 py-2">${escapeHtml(s.name)}</td>
+      <td class="px-4 py-2">${escapeHtml(s.whatsapp)}</td>
+      <td class="px-4 py-2">${pct}%</td>
+      <td class="px-4 py-2">${total}</td>`;
+    tbody.appendChild(tr);
+  });
+  window._attendanceCache = attendance; // for CSV export
+}
+
+function downloadCSV(filename, rows) {
+  const headers = Object.keys(rows[0] || {});
+  const csv = [headers.join(','), ...rows.map(r => headers.map(h => (r[h] ?? '')).join(','))].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+async function exportStudentsCSV() {
+  const res = await fetch(GOOGLE_SCRIPT_URL + '?sheet=Students');
+  const students = await res.json();
+  if (students.length) downloadCSV('students.csv', students);
+}
+
+async function exportAttendanceCSV() {
+  let data = window._attendanceCache;
+  if (!data) {
+    const res = await fetch(GOOGLE_SCRIPT_URL + '?sheet=Attendance');
+    data = await res.json();
+  }
+  if (data.length) downloadCSV('attendance.csv', data);
+}
+
+// ===================== SMALL HELPERS =====================
+function escapeHtml(s){
+  return String(s||'').replace(/[&<>\"]+/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[ch]));
+}
+function escapeAttr(s){
+  return String(s||'').replace(/['"\\]/g, m => ({"'":"&#39;","\"":"&quot;","\\":"\\\\"}[m]));
+}
+</script></body>
+</html>
