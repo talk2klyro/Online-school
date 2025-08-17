@@ -8,52 +8,17 @@
   <style>
     @media print { .no-print, aside, nav button, #loginPage { display:none !important } body{background:#fff} main{padding:0} }
     th.sticky { position: sticky; top: 0; z-index: 5; }
-    .btn { @apply px-3 py-2 rounded text-white; }
+    .container { max-width: 1200px; margin: 0 auto; }
   </style>
 </head>
-<body class="bg-gray-100 min-h-screen"><!-- ================= LOGIN (PIN from Sheety Settings sheet) ================= --><section id="loginPage" class="flex items-center justify-center h-screen p-6">
+<body class="bg-gray-100 min-h-screen"><!-- ================= LOGIN (PIN from Sheety: sheet2.pin) ================= --><section id="loginPage" class="flex items-center justify-center h-screen p-6">
   <div class="bg-white p-6 rounded-xl shadow w-full max-w-sm">
     <h2 class="text-2xl font-bold text-center mb-2">Admin Login</h2>
     <p class="text-center text-gray-500 mb-4">Enter your PIN</p>
     <input id="pinInput" type="password" class="w-full border rounded p-2 mb-3 text-center" placeholder="••••"/>
     <button onclick="checkLogin()" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded">Login</button>
     <p id="loginError" class="text-center text-red-600 text-sm mt-3 hidden">Invalid PIN or server error.</p>
-    <p class="text-xs text-gray-500 mt-2 text-center">Default if no Settings sheet found: <code>1234</code></p>
-  </div>
-</section><!-- ================= APP LAYOUT ================= --><div id="app" class="hidden">
-  <!-- Topbar -->
-  <nav class="bg-green-700 text-white px-6 py-3 flex items-center justify-between no-print">
-    <div>
-      <h1 class="text-2xl font-bold leading-tight">MADARASATUN NISA’I</h1>
-      <p class="text-sm opacity-90 -mt-1">ILIMI HASKEN RAYUWA</p>
-    </div>
-    <div class="hidden md:block text-sm text-right">
-      <p>📧 ibrahimsadau6644@gmail.com</p>
-      <p>📞 07066144944 • 08035458742</p>
-    </div>
-    <div class="flex gap-2 items-center">
-      <button onclick="window.print()" class="bg-gray-900/70 hover:bg-black px-3 py-1 rounded">Print/PDF</button>
-<!DOCTYPE html><html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Madarasatun Nisa’i – Admin</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <style>
-    @media print { .no-print, aside, nav button, #loginPage { display:none !important } body{background:#fff} main{padding:0} }
-    th.sticky { position: sticky; top: 0; z-index: 5; }
-    .btn { @apply px-3 py-2 rounded text-white; }
-  </style>
-</head>
-<body class="bg-gray-100 min-h-screen"><!-- ================= LOGIN (PIN from Sheety Settings sheet) ================= --><section id="loginPage" class="flex items-center justify-center h-screen p-6">
-  <div class="bg-white p-6 rounded-xl shadow w-full max-w-sm">
-    <h2 class="text-2xl font-bold text-center mb-2">Admin Login</h2>
-    <p class="text-center text-gray-500 mb-4">Enter your PIN</p>
-    <input id="pinInput" type="password" class="w-full border rounded p-2 mb-3 text-center" placeholder="••••"/>
-    <button onclick="checkLogin()" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded">Login</button>
-    <p id="loginError" class="text-center text-red-600 text-sm mt-3 hidden">Invalid PIN or server error.</p>
-    <p class="text-xs text-gray-500 mt-2 text-center">Default if no Settings sheet found: <code>1234</code></p>
+    <p class="text-xs text-gray-500 mt-2 text-center">Default if settings not found: <code>1234</code></p>
   </div>
 </section><!-- ================= APP LAYOUT ================= --><div id="app" class="hidden">
   <!-- Topbar -->
@@ -78,7 +43,7 @@
       <button class="w-full text-left hover:underline" onclick="showPage('reportsPage')">📊 Reports</button>
       <button class="w-full text-left hover:underline" onclick="showPage('settingsPage')">⚙️ Settings</button>
     </aside><!-- Main -->
-<main class="flex-1 p-6 space-y-8">
+<main class="flex-1 p-6 space-y-8 container">
 
   <!-- ========== STUDENTS ========= -->
   <section id="studentsPage" class="hidden">
@@ -188,12 +153,21 @@
   <!-- ========== SETTINGS ========= -->
   <section id="settingsPage" class="hidden">
     <h3 class="text-xl font-bold mb-2">Settings</h3>
-    <ol class="list-decimal ml-5 text-sm text-gray-700 space-y-1">
-      <li>Create a <strong>Sheety Settings</strong> sheet named <code>settings</code> with a <code>pin</code> column.
-      Add one row, set your admin PIN there.</li>
+    <ol class="list-decimal ml-5 text-sm text-gray-700 space-y-1 mb-4">
       <li>Students live in <code>sheet1</code> with columns: <code>name</code>, <code>whatsapp</code>, <code>week1..week12</code>.</li>
-      <li>Replace the <em>SHEETY_BASE</em> link inside the code with your own.</li>
+      <li>PIN is stored in <code>sheet2</code> (first row) under column <code>pin</code>.</li>
+      <li>Replace the <em>SHEETY_BASE</em> link inside the code with your own project base.</li>
     </ol>
+
+    <div class="bg-white rounded-xl shadow p-4 max-w-md">
+      <h4 class="font-semibold mb-2">Change Admin PIN</h4>
+      <div class="space-y-2">
+        <input id="newPin" type="password" class="w-full border rounded p-2" placeholder="New PIN (e.g., 1234)">
+        <input id="confirmPin" type="password" class="w-full border rounded p-2" placeholder="Confirm PIN">
+        <button onclick="changePin()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">Update PIN</button>
+        <p id="pinMsg" class="text-sm mt-1"></p>
+      </div>
+    </div>
   </section>
 
 </main>
@@ -205,31 +179,37 @@
 /***** CONFIG (Sheety) *****/
 // Base looks like: https://api.sheety.co/XXXX/onlineSchool
 const SHEETY_BASE = "https://api.sheety.co/1a50e062d0eab2328ebdc89440e03747/onlineSchool"; // <--- change to yours if different
-const SHEETY_STUDENTS = SHEETY_BASE + "/sheet1";     // columns: name, whatsapp, week1..week12
-const SHEETY_SETTINGS = SHEETY_BASE + "/settings";   // optional: column 'pin'
-const WRAP_KEY = "sheet1"; // JSON wrapper name must match your sheet name
+const SHEETY_STUDENTS = SHEETY_BASE + "/sheet1";   // columns: name, whatsapp, week1..week12 (sheet name: sheet1)
+const SHEETY_SETTINGS = SHEETY_BASE + "/sheet2";   // column: pin (sheet name: sheet2)
+const WRAP_STUDENTS = "sheet1";                    // JSON wrapper for students
+const WRAP_SETTINGS = "sheet2";                    // JSON wrapper for settings
+const DEFAULT_PIN = "1234";                        // fallback if settings not found
 
 /***** APP STATE *****/
-let students = [];      // latest students from API
+let students = [];         // latest students from API
 let _attendanceCache = []; // used by Reports & PDF
 
 /***** AUTH *****/
+async function fetchServerPin(){
+  try{
+    const r = await fetch(SHEETY_SETTINGS);
+    if(!r.ok) return DEFAULT_PIN;
+    const d = await r.json();
+    const arr = d[WRAP_SETTINGS] || [];
+    if(Array.isArray(arr) && arr.length){
+      return String(arr[0].pin || DEFAULT_PIN);
+    }
+    return DEFAULT_PIN;
+  }catch(err){
+    return DEFAULT_PIN;
+  }
+}
+
 async function checkLogin(){
   const pin = document.getElementById('pinInput').value.trim();
   if(!pin) return;
-  let serverPin = '1234'; // default if settings sheet not found
-  try{
-    const r = await fetch(SHEETY_SETTINGS);
-    if(r.ok){
-      const d = await r.json();
-      const arr = d.settings || d[WRAP_KEY] || [];
-      if(Array.isArray(arr) && arr.length){
-        const row = arr[0];
-        serverPin = row.pin || row.adminPin || serverPin;
-      }
-    }
-  }catch(err){ /* fallback to default */ }
-  if(pin === String(serverPin)){
+  const serverPin = await fetchServerPin();
+  if(pin === serverPin){
     localStorage.setItem('mn_login','1');
     document.getElementById('loginPage').classList.add('hidden');
     document.getElementById('app').classList.remove('hidden');
@@ -255,8 +235,8 @@ function awaitFetchStudentsThen(fn){ fetchStudents().then(fn).catch(()=>{}); }
 async function fetchStudents(){
   const res = await fetch(SHEETY_STUDENTS);
   const data = await res.json();
-  students = data[WRAP_KEY] || [];
-  // normalize missing week columns
+  students = data[WRAP_STUDENTS] || [];
+  // normalize week columns
   students.forEach(s=>{ for(let w=1; w<=12; w++){ const key='week'+w; if(!(key in s)) s[key] = ''; }});
   renderStudents();
 }
@@ -265,7 +245,7 @@ async function addStudent(){
   const name = document.getElementById('studentName').value.trim();
   const whatsapp = document.getElementById('studentWhatsApp').value.trim();
   if(!name||!whatsapp) return alert('Provide name & WhatsApp');
-  await fetch(SHEETY_STUDENTS,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({[WRAP_KEY]:{name,whatsapp}})});
+  await fetch(SHEETY_STUDENTS,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({[WRAP_STUDENTS]:{name,whatsapp}})});
   document.getElementById('studentName').value='';
   document.getElementById('studentWhatsApp').value='';
   fetchStudents();
@@ -273,7 +253,7 @@ async function addStudent(){
 async function editStudent(id,name,whatsapp){
   const nn = prompt('Edit name', name); if(nn===null) return;
   const nw = prompt('Edit WhatsApp', whatsapp); if(nw===null) return;
-  await fetch(`${SHEETY_STUDENTS}/${id}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({[WRAP_KEY]:{name:nn,whatsapp:nw}})});
+  await fetch(`${SHEETY_STUDENTS}/${id}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({[WRAP_STUDENTS]:{name:nn,whatsapp:nw}})});
   fetchStudents();
 }
 async function deleteStudent(id){
@@ -305,19 +285,15 @@ function renderStudents(){
 }
 
 // Bulk import CSV
-function downloadCSVTemplate(){ const blob = new Blob(['Name,WhatsApp
-'],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='students_template.csv'; a.click(); }
+function downloadCSVTemplate(){ const blob = new Blob(['Name,WhatsApp\n'],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='students_template.csv'; a.click(); }
 async function handleCSVUpload(){
   const file = document.getElementById('csvInput').files[0]; const msg=document.getElementById('importMsg');
   if(!file) return; const text = await file.text();
-  const rows = text.split(/
-?
-/).map(l=>l.trim()).filter(Boolean);
+  const rows = text.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
   const items = rows.map(l=>{ const [name,whatsapp] = l.split(','); return {name:name?.trim(), whatsapp:whatsapp?.trim()}; }).filter(s=>s.name && s.whatsapp);
   if(!items.length){ msg.textContent='No valid rows found.'; msg.className='text-red-600'; return; }
-  // sequential POSTs to avoid rate limits
   for(const it of items){
-    await fetch(SHEETY_STUDENTS,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({[WRAP_KEY]:it})});
+    await fetch(SHEETY_STUDENTS,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({[WRAP_STUDENTS]:it})});
   }
   msg.textContent=`Imported ${items.length} students.`; msg.className='text-green-600'; document.getElementById('csvInput').value='';
   fetchStudents();
@@ -339,8 +315,7 @@ function renderAttendance(){
 }
 async function markAttendance(id,week,present){
   const key = 'week'+week; const value = present ? 'P' : 'A';
-  await fetch(`${SHEETY_STUDENTS}/${id}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({[WRAP_KEY]:{[key]:value}})});
-  // optionally refresh local copy
+  await fetch(`${SHEETY_STUDENTS}/${id}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({[WRAP_STUDENTS]:{[key]:value}})});
   const idx = students.findIndex(s=>String(s.id)===String(id)); if(idx>-1) students[idx][key]=value;
 }
 
@@ -363,8 +338,7 @@ async function exportAttendanceCSV(){ if(!students.length) await fetchStudents()
 function downloadCSV(filename, rows){
   const norm = rows.map(r=>{ const o={id:r.id,name:r.name,whatsapp:r.whatsapp}; for(let w=1; w<=12; w++){ o['week'+w]=r['week'+w]||''; } return o; });
   const headers = Object.keys(norm[0]||{});
-  const csv = [headers.join(','), ...norm.map(r=>headers.map(h=>`"${(r[h]??'').toString().replace(/"/g,'""')}"`).join(','))].join('
-');
+  const csv = [headers.join(','), ...norm.map(r=>headers.map(h=>`"${(r[h]??'').toString().replace(/"/g,'""')}"`).join(','))].join('\n');
   const blob = new Blob([csv],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=filename; a.click();
 }
 
@@ -388,7 +362,7 @@ ta.addEventListener('input', set); set();
 
 async function downloadPDF(){ const { jsPDF } = window.jspdf; const doc = new jsPDF({ unit:'pt', format:'a4' }); const margin = 36; let y = margin; doc.setFontSize(18); doc.text('MADARASATUN NISA’İ', margin, y); y+=18; doc.setFontSize(12); doc.text('ILIMI HASKEN RAYUWA', margin, y); y+=18; doc.setDrawColor(200); doc.line(margin, y, 559, y); y+=12; doc.setFontSize(12); doc.text('Attendance (12 weeks)', margin, y); y+=12;
 
-// Header const header = ['S/N','Name','WhatsApp',...Array.from({length:12},(_,i)=>'W'+(i+1))]; const colW = [30, 160, 120, ...Array(12).fill(22)]; let x = margin; doc.setFontSize(9); header.forEach((h,i)=>{ doc.text(h, x+2, y); x += colW[i]; }); y+=12; doc.line(margin, y, 559, y); y+=6;
+const header = ['S/N','Name','WhatsApp',...Array.from({length:12},(_,i)=>'W'+(i+1))]; const colW = [30, 160, 120, ...Array(12).fill(22)]; let x = margin; doc.setFontSize(9); header.forEach((h,i)=>{ doc.text(h, x+2, y); x += colW[i]; }); y+=12; doc.line(margin, y, 559, y); y+=6;
 
 const rows = students || []; rows.forEach((s,idx)=>{ x = margin; const cells=[String(idx+1), s.name||'', s.whatsapp||'']; for(let w=1; w<=12; w++) cells.push(s['week'+w]||''); cells.forEach((c,i)=>{ doc.text(String(c), x+2, y); x += colW[i]; }); y+=12; if(y>740){ doc.addPage(); y=margin; } });
 
@@ -396,9 +370,13 @@ y+=10; doc.setDrawColor(200); doc.line(margin, y, 559, y); y+=16; doc.setFontSiz
 
 y = 812-28; doc.setFontSize(9); doc.text("Contact: ibrahimsadau6644@gmail.com | 07066144944, 08035458742", margin, y); doc.save('attendance.pdf'); }
 
-/***** HELPERS *****/ function escapeHtml(s){ return String(s??'').replace(/[&<>"']/g, ch=>({'&':'&','<':'<','>':'>','"':'"',''':'''}[ch])); } function escapeAttr(s){ return String(s??'').replace(/"/g,'"').replace(/'/g,'''); }
+/***** SETTINGS: CHANGE PIN *****/ async function changePin(){ const pin1 = document.getElementById('newPin').value.trim(); const pin2 = document.getElementById('confirmPin').value.trim(); const msg = document.getElementById('pinMsg'); msg.textContent=''; msg.className='text-sm'; if(!pin1 || pin1!==pin2){ msg.textContent='Pins do not match.'; msg.classList.add('text-red-600'); return; }
 
-// Initial boot if already logged in if(localStorage.getItem('mn_login')==='1'){ showPage('studentsPage'); } </script>
+try{ // get existing rows const r = await fetch(SHEETY_SETTINGS); if(!r.ok){ throw new Error('Cannot read settings'); } const d = await r.json(); const arr = d[WRAP_SETTINGS] || []; if(arr.length){ const rowId = arr[0].id; await fetch(${SHEETY_SETTINGS}/${rowId}, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ [WRAP_SETTINGS]: { pin: pin1 } }) }); }else{ await fetch(SHEETY_SETTINGS, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ [WRAP_SETTINGS]: { pin: pin1 } }) }); } msg.textContent='PIN updated successfully.'; msg.classList.add('text-green-600'); document.getElementById('newPin').value=''; document.getElementById('confirmPin').value=''; }catch(e){ msg.textContent = 'Failed to update PIN.'; msg.classList.add('text-red-600'); } }
+
+/***** HELPERS *****/ function escapeHtml(s){ return String(s??'').replace(/[&<>"']/g, ch=>({'&':'&','<':'<','>':'>','"':'"',''':'''}[ch])); } function escapeAttr(s){ return String(s??'').replace(/["'\]/g, m=>({""":""","'":"'","\":"\\"}[m])); }
+
+// Boot if already logged in if(localStorage.getItem('mn_login')==='1'){ showPage('studentsPage'); } </script>
 
 </body>
 </html>
