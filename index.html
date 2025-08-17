@@ -2,332 +2,403 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Madarasatun Nisa'i Admin</title>
+  <title>Madarasatun Nisa’i – Admin</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!--
-    SETUP NOTES
-    1) Replace GOOGLE_SCRIPT_URL below with your deployed Apps Script Web App URL.
-    2) (Optional) Change ADMIN_PIN to your preferred PIN.
-    3) Sheet structure must match the provided template:
-       - Students: ID | Name | WhatsApp
-       - Attendance: ID | Name | WhatsApp | W1..W12
-  -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
-    /* Improve print layout for PDF */
-    @media print {
-      #loginPage, aside, nav button, .no-print { display: none !important; }
-      body { background: white; }
-      main { padding: 0; }
-      table { page-break-inside: avoid; }
-    }
+    @media print { .no-print, aside, nav button, #loginPage { display:none !important } body{background:#fff} main{padding:0} }
+    th.sticky { position: sticky; top: 0; z-index: 5; }
+    .btn { @apply px-3 py-2 rounded text-white; }
   </style>
 </head>
-<body class="bg-gray-100 min-h-screen"><!-- 🔑 Login Page --><section id="loginPage" class="flex items-center justify-center h-screen">
-  <div class="bg-white p-8 rounded-lg shadow-md w-80 text-center">
-    <h2 class="text-2xl font-bold mb-4">Admin Login</h2>
-    <input type="password" id="pinInput" placeholder="Enter PIN"
-      class="w-full p-2 border rounded mb-4 text-center">
-    <button onclick="checkLogin()"
-      class="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-      Login
-    </button>
-    <p id="loginError" class="text-red-500 text-sm mt-2 hidden">Invalid PIN</p>
+<body class="bg-gray-100 min-h-screen"><!-- ================= LOGIN (PIN from Sheety Settings sheet) ================= --><section id="loginPage" class="flex items-center justify-center h-screen p-6">
+  <div class="bg-white p-6 rounded-xl shadow w-full max-w-sm">
+    <h2 class="text-2xl font-bold text-center mb-2">Admin Login</h2>
+    <p class="text-center text-gray-500 mb-4">Enter your PIN</p>
+    <input id="pinInput" type="password" class="w-full border rounded p-2 mb-3 text-center" placeholder="••••"/>
+    <button onclick="checkLogin()" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded">Login</button>
+    <p id="loginError" class="text-center text-red-600 text-sm mt-3 hidden">Invalid PIN or server error.</p>
+    <p class="text-xs text-gray-500 mt-2 text-center">Default if no Settings sheet found: <code>1234</code></p>
   </div>
-</section><!-- 📊 Dashboard --><div id="dashboard" class="hidden">  <!-- Navbar -->  <nav class="bg-green-600 text-white px-6 py-3 flex justify-between items-center">
+</section><!-- ================= APP LAYOUT ================= --><div id="app" class="hidden">
+  <!-- Topbar -->
+  <nav class="bg-green-700 text-white px-6 py-3 flex items-center justify-between no-print">
     <div>
-      <h1 class="text-2xl font-bold">MADARASATUN NISA’I</h1>
-      <p class="text-sm">ILIMI HASKEN RAYUWA</p>
+      <h1 class="text-2xl font-bold leading-tight">MADARASATUN NISA’I</h1>
+      <p class="text-sm opacity-90 -mt-1">ILIMI HASKEN RAYUWA</p>
     </div>
-    <div class="hidden md:block text-right text-sm">
+    <div class="hidden md:block text-sm text-right">
       <p>📧 ibrahimsadau6644@gmail.com</p>
-      <p>📞 07066144944 | 08035458742</p>
+      <p>📞 07066144944 • 08035458742</p>
     </div>
-    <div class="flex items-center gap-2">
-      <button onclick="window.print()" class="no-print bg-gray-800 px-3 py-1 rounded hover:bg-gray-900">Print/PDF</button>
-      <button onclick="logout()" class="no-print bg-red-500 px-3 py-1 rounded hover:bg-red-600">Logout</button>
+    <div class="flex gap-2 items-center">
+      <button onclick="window.print()" class="bg-gray-900/70 hover:bg-black px-3 py-1 rounded">Print/PDF</button>
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Madarasatun Nisa’i – Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    @media print { .no-print, aside, nav button, #loginPage { display:none !important } body{background:#fff} main{padding:0} }
+    th.sticky { position: sticky; top: 0; z-index: 5; }
+    .btn { @apply px-3 py-2 rounded text-white; }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen"><!-- ================= LOGIN (PIN from Sheety Settings sheet) ================= --><section id="loginPage" class="flex items-center justify-center h-screen p-6">
+  <div class="bg-white p-6 rounded-xl shadow w-full max-w-sm">
+    <h2 class="text-2xl font-bold text-center mb-2">Admin Login</h2>
+    <p class="text-center text-gray-500 mb-4">Enter your PIN</p>
+    <input id="pinInput" type="password" class="w-full border rounded p-2 mb-3 text-center" placeholder="••••"/>
+    <button onclick="checkLogin()" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded">Login</button>
+    <p id="loginError" class="text-center text-red-600 text-sm mt-3 hidden">Invalid PIN or server error.</p>
+    <p class="text-xs text-gray-500 mt-2 text-center">Default if no Settings sheet found: <code>1234</code></p>
+  </div>
+</section><!-- ================= APP LAYOUT ================= --><div id="app" class="hidden">
+  <!-- Topbar -->
+  <nav class="bg-green-700 text-white px-6 py-3 flex items-center justify-between no-print">
+    <div>
+      <h1 class="text-2xl font-bold leading-tight">MADARASATUN NISA’I</h1>
+      <p class="text-sm opacity-90 -mt-1">ILIMI HASKEN RAYUWA</p>
     </div>
-  </nav>  <!-- Layout -->  <div class="flex">
+    <div class="hidden md:block text-sm text-right">
+      <p>📧 ibrahimsadau6644@gmail.com</p>
+      <p>📞 07066144944 • 08035458742</p>
+    </div>
+    <div class="flex gap-2 items-center">
+      <button onclick="window.print()" class="bg-gray-900/70 hover:bg-black px-3 py-1 rounded">Print/PDF</button>
+      <button onclick="logout()" class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded">Logout</button>
+    </div>
+  </nav>  <div class="flex">
     <!-- Sidebar -->
-    <aside class="w-60 bg-gray-800 text-white min-h-screen p-4 sticky top-0">
-      <ul class="space-y-3">
-        <li><button onclick="showPage('students')" class="w-full text-left hover:underline">📘 Students</button></li>
-        <li><button onclick="showPage('attendance')" class="w-full text-left hover:underline">🗓️ Attendance</button></li>
-        <li><button onclick="showPage('reports')" class="w-full text-left hover:underline">📊 Reports</button></li>
-      </ul>
-    </aside><!-- Main Content -->
+    <aside class="w-60 bg-gray-900 text-white min-h-[calc(100vh-64px)] p-4 space-y-2 no-print">
+      <button class="w-full text-left hover:underline" onclick="showPage('studentsPage')">📘 Students</button>
+      <button class="w-full text-left hover:underline" onclick="showPage('attendancePage')">🗓️ Attendance</button>
+      <button class="w-full text-left hover:underline" onclick="showPage('reportsPage')">📊 Reports</button>
+      <button class="w-full text-left hover:underline" onclick="showPage('settingsPage')">⚙️ Settings</button>
+    </aside><!-- Main -->
 <main class="flex-1 p-6 space-y-8">
-  <!-- 👩‍🎓 Students Page -->
-  <section id="students" class="hidden">
-    <div class="flex flex-col md:flex-row md:items-end gap-2 md:gap-4 mb-4">
-      <div class="flex-1">
-        <label class="block text-sm font-medium mb-1">Full Name</label>
-        <input type="text" id="studentName" placeholder="Enter full name" required class="w-full p-2 border rounded">
+
+  <!-- ========== STUDENTS ========= -->
+  <section id="studentsPage" class="hidden">
+    <div class="flex items-end gap-2 flex-wrap mb-3">
+      <div class="flex-1 min-w-[220px]">
+        <label class="text-sm font-medium">Full Name</label>
+        <input id="studentName" class="w-full border rounded p-2" placeholder="e.g. Aisha Musa"/>
       </div>
-      <div class="flex-1">
-        <label class="block text-sm font-medium mb-1">WhatsApp Number</label>
-        <input type="text" id="studentWhatsApp" placeholder="e.g. 070xxxxxxx" required class="w-full p-2 border rounded">
+      <div class="flex-1 min-w-[220px]">
+        <label class="text-sm font-medium">WhatsApp</label>
+        <input id="studentWhatsApp" class="w-full border rounded p-2" placeholder="e.g. 2347012345678"/>
       </div>
-      <button onclick="addStudent(event)" class="px-4 py-2 bg-green-600 text-white rounded self-start md:self-auto">Add</button>
+      <button onclick="addStudent()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">Add Student</button>
+    </div>
+
+    <div class="no-print bg-white rounded-lg shadow p-4 mb-4">
+      <div class="flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h4 class="font-semibold">Bulk Import (CSV)</h4>
+          <p class="text-sm text-gray-600">Columns: <code>Name,WhatsApp</code> (no header needed).</p>
+        </div>
+        <div class="flex gap-2 items-center">
+          <input id="csvInput" type="file" accept=".csv" class="border rounded p-2">
+          <button onclick="handleCSVUpload()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded">Upload CSV</button>
+          <button onclick="downloadCSVTemplate()" class="bg-gray-800 hover:bg-black text-white px-3 py-2 rounded">Download Template</button>
+          <span id="importMsg" class="text-sm"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between mb-2">
+      <input id="studentSearch" class="border rounded p-2 w-72" placeholder="Search name or WhatsApp" oninput="renderStudents()"/>
+      <span id="studentCount" class="text-sm text-gray-600"></span>
     </div>
 
     <div class="overflow-x-auto">
-      <table class="min-w-full bg-white rounded shadow">
-        <thead class="bg-gray-200 sticky top-0"> 
+      <table class="min-w-full bg-white rounded-xl shadow text-sm min-w-[720px]">
+        <thead class="bg-gray-200">
           <tr>
-            <th class="px-4 py-2 text-left">S/N</th>
-            <th class="px-4 py-2 text-left">Name</th>
-            <th class="px-4 py-2 text-left">WhatsApp</th>
-            <th class="px-4 py-2 text-left">Actions</th>
+            <th class="px-3 py-2 text-left sticky">S/N</th>
+            <th class="px-3 py-2 text-left sticky">Name</th>
+            <th class="px-3 py-2 text-left sticky">WhatsApp</th>
+            <th class="px-3 py-2 text-left sticky">Actions</th>
           </tr>
         </thead>
-        <tbody id="studentsTable" class="divide-y">
-          <!-- rows injected here -->
-        </tbody>
+        <tbody id="studentsTable" class="divide-y"></tbody>
       </table>
     </div>
   </section>
 
-  <!-- 🗓️ Attendance Page -->
-  <section id="attendance" class="hidden">
-    <h3 class="text-xl font-bold mb-4">Attendance Register</h3>
+  <!-- ========== ATTENDANCE ========= -->
+  <section id="attendancePage" class="hidden">
+    <h3 class="text-xl font-bold mb-3">Attendance Register (12 weeks)</h3>
     <div class="overflow-x-auto">
-      <table class="min-w-full bg-white rounded shadow text-sm">
-        <thead class="bg-gray-200 sticky top-0">
+      <table class="min-w-full bg-white rounded-xl shadow text-sm min-w-[980px]">
+        <thead class="bg-gray-200">
           <tr>
-            <th class="px-2 py-1 text-left">S/N</th>
-            <th class="px-2 py-1 text-left">Name</th>
-            <th class="px-2 py-1 text-left">WhatsApp</th>
-            <th class="px-2 py-1">W1</th>
-            <th class="px-2 py-1">W2</th>
-            <th class="px-2 py-1">W3</th>
-            <th class="px-2 py-1">W4</th>
-            <th class="px-2 py-1">W5</th>
-            <th class="px-2 py-1">W6</th>
-            <th class="px-2 py-1">W7</th>
-            <th class="px-2 py-1">W8</th>
-            <th class="px-2 py-1">W9</th>
-            <th class="px-2 py-1">W10</th>
-            <th class="px-2 py-1">W11</th>
-            <th class="px-2 py-1">W12</th>
+            <th class="px-2 py-2 text-left sticky">S/N</th>
+            <th class="px-2 py-2 text-left sticky">Name</th>
+            <th class="px-2 py-2 text-left sticky">WhatsApp</th>
+            <th class="px-2 py-2 sticky">W1</th>
+            <th class="px-2 py-2 sticky">W2</th>
+            <th class="px-2 py-2 sticky">W3</th>
+            <th class="px-2 py-2 sticky">W4</th>
+            <th class="px-2 py-2 sticky">W5</th>
+            <th class="px-2 py-2 sticky">W6</th>
+            <th class="px-2 py-2 sticky">W7</th>
+            <th class="px-2 py-2 sticky">W8</th>
+            <th class="px-2 py-2 sticky">W9</th>
+            <th class="px-2 py-2 sticky">W10</th>
+            <th class="px-2 py-2 sticky">W11</th>
+            <th class="px-2 py-2 sticky">W12</th>
           </tr>
         </thead>
-        <tbody id="attendanceTable" class="divide-y">
-          <!-- rows injected here -->
-        </tbody>
+        <tbody id="attendanceTable" class="divide-y"></tbody>
       </table>
     </div>
   </section>
 
-  <!-- 📊 Reports Page -->
-  <section id="reports" class="hidden">
-    <h3 class="text-xl font-bold mb-4">Reports</h3>
-    <div class="mb-4 flex flex-wrap gap-2 no-print">
-      <button onclick="exportStudentsCSV()" class="px-4 py-2 bg-blue-500 text-white rounded">Export Students (CSV)</button>
-      <button onclick="exportAttendanceCSV()" class="px-4 py-2 bg-indigo-500 text-white rounded">Export Attendance (CSV)</button>
-      <button onclick="window.print()" class="px-4 py-2 bg-gray-700 text-white rounded">Print / Save as PDF</button>
+  <!-- ========== REPORTS ========= -->
+  <section id="reportsPage" class="hidden">
+    <div class="flex flex-wrap gap-2 no-print mb-4">
+      <button onclick="exportStudentsCSV()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Export Students (CSV)</button>
+      <button onclick="exportAttendanceCSV()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded">Export Attendance (CSV)</button>
+      <button onclick="downloadPDF()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">Download PDF</button>
+      <button onclick="generateReminders()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded">Generate WhatsApp Reminders</button>
     </div>
-    <div class="overflow-x-auto">
-      <table class="min-w-full bg-white rounded shadow">
-        <thead class="bg-gray-200 sticky top-0">
+
+    <div class="overflow-x-auto mb-8">
+      <table class="min-w-full bg-white rounded-xl shadow text-sm min-w-[720px]">
+        <thead class="bg-gray-200">
           <tr>
-            <th class="px-4 py-2 text-left">S/N</th>
-            <th class="px-4 py-2 text-left">Name</th>
-            <th class="px-4 py-2 text-left">WhatsApp</th>
-            <th class="px-4 py-2 text-left">Present (%)</th>
-            <th class="px-4 py-2 text-left">Sessions Counted</th>
+            <th class="px-3 py-2 text-left sticky">S/N</th>
+            <th class="px-3 py-2 text-left sticky">Name</th>
+            <th class="px-3 py-2 text-left sticky">WhatsApp</th>
+            <th class="px-3 py-2 text-left sticky">Present (%)</th>
+            <th class="px-3 py-2 text-left sticky">Sessions Counted</th>
           </tr>
         </thead>
-        <tbody id="reportTable" class="divide-y">
-          <!-- rows injected here -->
-        </tbody>
+        <tbody id="reportTable" class="divide-y"></tbody>
       </table>
     </div>
+
+    <div id="remindersList" class="space-y-4"></div>
+  </section>
+
+  <!-- ========== SETTINGS ========= -->
+  <section id="settingsPage" class="hidden">
+    <h3 class="text-xl font-bold mb-2">Settings</h3>
+    <ol class="list-decimal ml-5 text-sm text-gray-700 space-y-1">
+      <li>Create a <strong>Sheety Settings</strong> sheet named <code>settings</code> with a <code>pin</code> column.
+      Add one row, set your admin PIN there.</li>
+      <li>Students live in <code>sheet1</code> with columns: <code>name</code>, <code>whatsapp</code>, <code>week1..week12</code>.</li>
+      <li>Replace the <em>SHEETY_BASE</em> link inside the code with your own.</li>
+    </ol>
   </section>
 
 </main>
 
   </div>
-</div><script>
-// ===================== CONFIG =====================
-const GOOGLE_SCRIPT_URL = "YOUR_GOOGLE_SCRIPT_URL"; // <-- REPLACE
-const ADMIN_PIN = "1234"; // <-- change to your PIN
+</div><footer class="no-print bg-gray-900 text-white text-center text-sm py-3">
+  © Madarasatun Nisa’i • ILIMI HASKEN RAYUWA
+</footer><script>
+/***** CONFIG (Sheety) *****/
+// Base looks like: https://api.sheety.co/XXXX/onlineSchool
+const SHEETY_BASE = "https://api.sheety.co/1a50e062d0eab2328ebdc89440e03747/onlineSchool"; // <--- change to yours if different
+const SHEETY_STUDENTS = SHEETY_BASE + "/sheet1";     // columns: name, whatsapp, week1..week12
+const SHEETY_SETTINGS = SHEETY_BASE + "/settings";   // optional: column 'pin'
+const WRAP_KEY = "sheet1"; // JSON wrapper name must match your sheet name
 
-// ===================== LOGIN =====================
-function checkLogin() {
+/***** APP STATE *****/
+let students = [];      // latest students from API
+let _attendanceCache = []; // used by Reports & PDF
+
+/***** AUTH *****/
+async function checkLogin(){
   const pin = document.getElementById('pinInput').value.trim();
-  if (pin === ADMIN_PIN) {
+  if(!pin) return;
+  let serverPin = '1234'; // default if settings sheet not found
+  try{
+    const r = await fetch(SHEETY_SETTINGS);
+    if(r.ok){
+      const d = await r.json();
+      const arr = d.settings || d[WRAP_KEY] || [];
+      if(Array.isArray(arr) && arr.length){
+        const row = arr[0];
+        serverPin = row.pin || row.adminPin || serverPin;
+      }
+    }
+  }catch(err){ /* fallback to default */ }
+  if(pin === String(serverPin)){
+    localStorage.setItem('mn_login','1');
     document.getElementById('loginPage').classList.add('hidden');
-    document.getElementById('dashboard').classList.remove('hidden');
-    showPage('students');
-  } else {
+    document.getElementById('app').classList.remove('hidden');
+    showPage('studentsPage');
+  }else{
     document.getElementById('loginError').classList.remove('hidden');
   }
 }
-function logout() {
-  document.getElementById('dashboard').classList.add('hidden');
-  document.getElementById('loginPage').classList.remove('hidden');
-  document.getElementById('pinInput').value = '';
-}
+function logout(){ localStorage.removeItem('mn_login'); location.reload(); }
+if(localStorage.getItem('mn_login')==='1'){ document.getElementById('loginPage').classList.add('hidden'); document.getElementById('app').classList.remove('hidden'); }
 
-// ===================== NAVIGATION =====================
-function showPage(id) {
-  document.querySelectorAll('main section').forEach(sec => sec.classList.add('hidden'));
+/***** NAV *****/
+function showPage(id){
+  document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
-  if (id === 'students') loadStudents();
-  if (id === 'attendance') loadAttendance();
-  if (id === 'reports') loadReports();
+  if(id==='studentsPage') fetchStudents();
+  if(id==='attendancePage') { if(!students.length) awaitFetchStudentsThen(renderAttendance); else renderAttendance(); }
+  if(id==='reportsPage') { if(!students.length) awaitFetchStudentsThen(loadReports); else loadReports(); document.getElementById('remindersList').innerHTML=''; }
+}
+function awaitFetchStudentsThen(fn){ fetchStudents().then(fn).catch(()=>{}); }
+
+/***** STUDENTS CRUD (Sheety) *****/
+async function fetchStudents(){
+  const res = await fetch(SHEETY_STUDENTS);
+  const data = await res.json();
+  students = data[WRAP_KEY] || [];
+  // normalize missing week columns
+  students.forEach(s=>{ for(let w=1; w<=12; w++){ const key='week'+w; if(!(key in s)) s[key] = ''; }});
+  renderStudents();
 }
 
-// ===================== STUDENTS CRUD =====================
-async function addStudent(e) {
-  if (e && e.preventDefault) e.preventDefault();
+async function addStudent(){
   const name = document.getElementById('studentName').value.trim();
   const whatsapp = document.getElementById('studentWhatsApp').value.trim();
-  if (!name || !whatsapp) return;
-  await fetch(GOOGLE_SCRIPT_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({ action: 'addStudent', name, whatsapp })
-  });
-  document.getElementById('studentName').value = '';
-  document.getElementById('studentWhatsApp').value = '';
-  loadStudents();
+  if(!name||!whatsapp) return alert('Provide name & WhatsApp');
+  await fetch(SHEETY_STUDENTS,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({[WRAP_KEY]:{name,whatsapp}})});
+  document.getElementById('studentName').value='';
+  document.getElementById('studentWhatsApp').value='';
+  fetchStudents();
+}
+async function editStudent(id,name,whatsapp){
+  const nn = prompt('Edit name', name); if(nn===null) return;
+  const nw = prompt('Edit WhatsApp', whatsapp); if(nw===null) return;
+  await fetch(`${SHEETY_STUDENTS}/${id}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({[WRAP_KEY]:{name:nn,whatsapp:nw}})});
+  fetchStudents();
+}
+async function deleteStudent(id){
+  if(!confirm('Delete this student?')) return;
+  await fetch(`${SHEETY_STUDENTS}/${id}`,{method:'DELETE'});
+  fetchStudents();
 }
 
-async function loadStudents() {
-  const res = await fetch(GOOGLE_SCRIPT_URL + '?sheet=Students');
-  const students = await res.json();
+// Search & render
+function renderStudents(){
+  const q = document.getElementById('studentSearch').value?.toLowerCase()||'';
   const tbody = document.getElementById('studentsTable');
-  tbody.innerHTML = '';
-  students.forEach((s, i) => {
+  const filtered = students.filter(s=> (s.name||'').toLowerCase().includes(q) || (s.whatsapp||'').toLowerCase().includes(q));
+  document.getElementById('studentCount').textContent = `${filtered.length} student(s)`;
+  tbody.innerHTML='';
+  filtered.forEach((s,i)=>{
     const tr = document.createElement('tr');
-    tr.className = i % 2 === 0 ? 'bg-white' : 'bg-gray-50';
+    tr.className = i%2? 'bg-gray-50':'bg-white';
     tr.innerHTML = `
-      <td class="px-4 py-2">${i + 1}</td>
-      <td class="px-4 py-2">${escapeHtml(s.name)}</td>
-      <td class="px-4 py-2">${escapeHtml(s.whatsapp)}</td>
-      <td class="px-4 py-2 space-x-2">
-        <button class="text-blue-600 hover:underline" onclick="editStudent('${s.id}', '${escapeAttr(s.name)}', '${escapeAttr(s.whatsapp)}')">✏️ Edit</button>
-        <button class="text-red-600 hover:underline" onclick="deleteStudent('${s.id}')">🗑️ Delete</button>
+      <td class='px-3 py-2'>${i+1}</td>
+      <td class='px-3 py-2'>${escapeHtml(s.name)}</td>
+      <td class='px-3 py-2'>${escapeHtml(s.whatsapp)}</td>
+      <td class='px-3 py-2 space-x-2'>
+        <button class='text-blue-600 hover:underline' onclick="editStudent('${s.id}','${escapeAttr(s.name)}','${escapeAttr(s.whatsapp)}')">✏️ Edit</button>
+        <button class='text-red-600 hover:underline' onclick="deleteStudent('${s.id}')">🗑️ Delete</button>
       </td>`;
     tbody.appendChild(tr);
   });
 }
 
-async function editStudent(id, name, whatsapp) {
-  const newName = prompt('Edit name:', name);
-  if (newName === null) return; // cancelled
-  const newWhatsapp = prompt('Edit WhatsApp:', whatsapp);
-  if (newWhatsapp === null) return;
-  await fetch(GOOGLE_SCRIPT_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({ action: 'editStudent', id, name: newName, whatsapp: newWhatsapp })
-  });
-  loadStudents();
-}
-
-async function deleteStudent(id) {
-  if (!confirm('Are you sure you want to delete this student?')) return;
-  await fetch(GOOGLE_SCRIPT_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({ action: 'deleteStudent', id })
-  });
-  loadStudents();
-}
-
-// ===================== ATTENDANCE =====================
-async function loadAttendance() {
-  const res = await fetch(GOOGLE_SCRIPT_URL + '?sheet=Attendance');
-  const data = await res.json();
-  const tbody = document.getElementById('attendanceTable');
-  tbody.innerHTML = '';
-  data.forEach((s, i) => {
-    const tr = document.createElement('tr');
-    tr.className = i % 2 === 0 ? 'bg-white' : 'bg-gray-50';
-    let cells = `
-      <td class=\"px-2 py-1\">${i + 1}</td>
-      <td class=\"px-2 py-1\">${escapeHtml(s.name)}</td>
-      <td class=\"px-2 py-1\">${escapeHtml(s.whatsapp)}</td>`;
-    for (let w = 1; w <= 12; w++) {
-      const checked = s['week' + w] === 'P' ? 'checked' : '';
-      cells += `
-        <td class=\"px-2 py-1 text-center\">
-          <input type=\"checkbox\" ${checked} onchange=\"markAttendance('${s.id}', ${w}, this.checked)\">
-        </td>`;
-    }
-    tr.innerHTML = cells;
-    tbody.appendChild(tr);
-  });
-}
-
-async function markAttendance(id, week, present) {
-  await fetch(GOOGLE_SCRIPT_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({ action: 'markAttendance', id, week, status: present ? 'P' : 'A' })
-  });
-}
-
-// ===================== REPORTS =====================
-async function loadReports() {
-  const res = await fetch(GOOGLE_SCRIPT_URL + '?sheet=Attendance');
-  const attendance = await res.json();
-  const tbody = document.getElementById('reportTable');
-  tbody.innerHTML = '';
-  attendance.forEach((s, i) => {
-    let total = 0, present = 0;
-    for (let w = 1; w <= 12; w++) {
-      const v = s['week' + w];
-      if (v === 'P' || v === 'A') total++;
-      if (v === 'P') present++;
-    }
-    const pct = total ? Math.round((present / total) * 100) : 0;
-    const tr = document.createElement('tr');
-    tr.className = i % 2 === 0 ? 'bg-white' : 'bg-gray-50';
-    tr.innerHTML = `
-      <td class="px-4 py-2">${i + 1}</td>
-      <td class="px-4 py-2">${escapeHtml(s.name)}</td>
-      <td class="px-4 py-2">${escapeHtml(s.whatsapp)}</td>
-      <td class="px-4 py-2">${pct}%</td>
-      <td class="px-4 py-2">${total}</td>`;
-    tbody.appendChild(tr);
-  });
-  window._attendanceCache = attendance; // for CSV export
-}
-
-function downloadCSV(filename, rows) {
-  const headers = Object.keys(rows[0] || {});
-  const csv = [headers.join(','), ...rows.map(r => headers.map(h => (r[h] ?? '')).join(','))].join('\n');
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = filename; a.click();
-  URL.revokeObjectURL(url);
-}
-
-async function exportStudentsCSV() {
-  const res = await fetch(GOOGLE_SCRIPT_URL + '?sheet=Students');
-  const students = await res.json();
-  if (students.length) downloadCSV('students.csv', students);
-}
-
-async function exportAttendanceCSV() {
-  let data = window._attendanceCache;
-  if (!data) {
-    const res = await fetch(GOOGLE_SCRIPT_URL + '?sheet=Attendance');
-    data = await res.json();
+// Bulk import CSV
+function downloadCSVTemplate(){ const blob = new Blob(['Name,WhatsApp
+'],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='students_template.csv'; a.click(); }
+async function handleCSVUpload(){
+  const file = document.getElementById('csvInput').files[0]; const msg=document.getElementById('importMsg');
+  if(!file) return; const text = await file.text();
+  const rows = text.split(/
+?
+/).map(l=>l.trim()).filter(Boolean);
+  const items = rows.map(l=>{ const [name,whatsapp] = l.split(','); return {name:name?.trim(), whatsapp:whatsapp?.trim()}; }).filter(s=>s.name && s.whatsapp);
+  if(!items.length){ msg.textContent='No valid rows found.'; msg.className='text-red-600'; return; }
+  // sequential POSTs to avoid rate limits
+  for(const it of items){
+    await fetch(SHEETY_STUDENTS,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({[WRAP_KEY]:it})});
   }
-  if (data.length) downloadCSV('attendance.csv', data);
+  msg.textContent=`Imported ${items.length} students.`; msg.className='text-green-600'; document.getElementById('csvInput').value='';
+  fetchStudents();
 }
 
-// ===================== SMALL HELPERS =====================
-function escapeHtml(s){
-  return String(s||'').replace(/[&<>\"]+/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[ch]));
+/***** ATTENDANCE *****/
+function renderAttendance(){
+  const tbody = document.getElementById('attendanceTable');
+  tbody.innerHTML='';
+  students.forEach((s,i)=>{
+    const tr = document.createElement('tr'); tr.className = i%2? 'bg-gray-50':'bg-white';
+    let cells = `<td class='px-2 py-1'>${i+1}</td><td class='px-2 py-1'>${escapeHtml(s.name)}</td><td class='px-2 py-1'>${escapeHtml(s.whatsapp)}</td>`;
+    for(let w=1; w<=12; w++){
+      const key='week'+w; const checked = (s[key]==='P' || s[key]==='Present') ? 'checked' : '';
+      cells += `<td class='px-2 py-1 text-center'><input type='checkbox' ${checked} onchange="markAttendance('${s.id}',${w},this.checked)"></td>`;
+    }
+    tr.innerHTML = cells; tbody.appendChild(tr);
+  });
 }
-function escapeAttr(s){
-  return String(s||'').replace(/['"\\]/g, m => ({"'":"&#39;","\"":"&quot;","\\":"\\\\"}[m]));
+async function markAttendance(id,week,present){
+  const key = 'week'+week; const value = present ? 'P' : 'A';
+  await fetch(`${SHEETY_STUDENTS}/${id}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({[WRAP_KEY]:{[key]:value}})});
+  // optionally refresh local copy
+  const idx = students.findIndex(s=>String(s.id)===String(id)); if(idx>-1) students[idx][key]=value;
 }
-</script></body>
+
+/***** REPORTS + EXPORTS *****/
+function loadReports(){
+  _attendanceCache = students.slice();
+  const tbody = document.getElementById('reportTable'); tbody.innerHTML='';
+  _attendanceCache.forEach((s,i)=>{
+    let total=0, present=0; for(let w=1; w<=12; w++){ const v=s['week'+w]; if(v==='P'||v==='A'||v==='Present'||v==='Absent') total++; if(v==='P'||v==='Present') present++; }
+    const pct = total? Math.round((present/total)*100) : 0;
+    const tr = document.createElement('tr'); tr.className = i%2? 'bg-gray-50':'bg-white';
+    tr.innerHTML = `<td class='px-3 py-2'>${i+1}</td><td class='px-3 py-2'>${escapeHtml(s.name)}</td><td class='px-3 py-2'>${escapeHtml(s.whatsapp)}</td><td class='px-3 py-2'>${pct}%</td><td class='px-3 py-2'>${total}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+async function exportStudentsCSV(){ if(!students.length) await fetchStudents(); if(students?.length) downloadCSV('students.csv', students); }
+async function exportAttendanceCSV(){ if(!students.length) await fetchStudents(); if(students?.length) downloadCSV('attendance.csv', students); }
+
+function downloadCSV(filename, rows){
+  const norm = rows.map(r=>{ const o={id:r.id,name:r.name,whatsapp:r.whatsapp}; for(let w=1; w<=12; w++){ o['week'+w]=r['week'+w]||''; } return o; });
+  const headers = Object.keys(norm[0]||{});
+  const csv = [headers.join(','), ...norm.map(r=>headers.map(h=>`"${(r[h]??'').toString().replace(/"/g,'""')}"`).join(','))].join('
+');
+  const blob = new Blob([csv],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=filename; a.click();
+}
+
+function generateReminders(){
+  const list = students || []; const box = document.getElementById('remindersList'); box.innerHTML='';
+  list.forEach(s=>{
+    let absentWeeks=[]; for(let w=1; w<=12; w++){ const v=s['week'+w]; if(v==='A'||v==='Absent') absentWeeks.push(w); }
+    if(!absentWeeks.length) return;
+    const defaultMsg = `Assalamu Alaikum ${s.name}, you missed class (Week(s): ${absentWeeks.join(', ')}) at Madarasatun Nisa’i. Please attend next time, Jazakallahu Khair.`;
+    const wrap = document.createElement('div'); wrap.className='p-4 bg-white rounded-xl shadow border';
+    wrap.innerHTML = `
+      <p class='font-semibold'>${escapeHtml(s.name)} <span class='text-gray-600 text-sm'>(${escapeHtml(s.whatsapp)})</span></p>
+      <textarea id='msg-${s.id}' class='w-full border rounded p-2 mt-2' rows='2'>${escapeHtml(defaultMsg)}</textarea><a id='wa-${s.id}' target='_blank' class='inline-block mt-2'><button class='bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded'>Send on WhatsApp</button></a>
+`;
+box.appendChild(wrap);
+const ta = wrap.querySelector('textarea'); const link = wrap.querySelector('a');
+const set = ()=> link.href = `https://wa.me/${encodeURIComponent(s.whatsapp)}?text=${encodeURIComponent(ta.value)}`;
+ta.addEventListener('input', set); set();
+
+}); }
+
+async function downloadPDF(){ const { jsPDF } = window.jspdf; const doc = new jsPDF({ unit:'pt', format:'a4' }); const margin = 36; let y = margin; doc.setFontSize(18); doc.text('MADARASATUN NISA’İ', margin, y); y+=18; doc.setFontSize(12); doc.text('ILIMI HASKEN RAYUWA', margin, y); y+=18; doc.setDrawColor(200); doc.line(margin, y, 559, y); y+=12; doc.setFontSize(12); doc.text('Attendance (12 weeks)', margin, y); y+=12;
+
+// Header const header = ['S/N','Name','WhatsApp',...Array.from({length:12},(_,i)=>'W'+(i+1))]; const colW = [30, 160, 120, ...Array(12).fill(22)]; let x = margin; doc.setFontSize(9); header.forEach((h,i)=>{ doc.text(h, x+2, y); x += colW[i]; }); y+=12; doc.line(margin, y, 559, y); y+=6;
+
+const rows = students || []; rows.forEach((s,idx)=>{ x = margin; const cells=[String(idx+1), s.name||'', s.whatsapp||'']; for(let w=1; w<=12; w++) cells.push(s['week'+w]||''); cells.forEach((c,i)=>{ doc.text(String(c), x+2, y); x += colW[i]; }); y+=12; if(y>740){ doc.addPage(); y=margin; } });
+
+y+=10; doc.setDrawColor(200); doc.line(margin, y, 559, y); y+=16; doc.setFontSize(12); doc.text('WhatsApp Reminders (Absent)', margin, y); y+=14; doc.setFontSize(10); rows.forEach(s=>{ const weeks=[]; for(let w=1; w<=12; w++){ const v=s['week'+w]; if(v==='A'||v==='Absent') weeks.push(w); } if(!weeks.length) return; const line = ${s.name} (${s.whatsapp}) – Missed Week(s): ${weeks.join(', ')}; const split = doc.splitTextToSize(line, 523); split.forEach(t=>{ doc.text(t, margin, y); y+=12; if(y>780){ doc.addPage(); y=margin; } }); });
+
+y = 812-28; doc.setFontSize(9); doc.text("Contact: ibrahimsadau6644@gmail.com | 07066144944, 08035458742", margin, y); doc.save('attendance.pdf'); }
+
+/***** HELPERS *****/ function escapeHtml(s){ return String(s??'').replace(/[&<>"']/g, ch=>({'&':'&','<':'<','>':'>','"':'"',''':'''}[ch])); } function escapeAttr(s){ return String(s??'').replace(/"/g,'"').replace(/'/g,'''); }
+
+// Initial boot if already logged in if(localStorage.getItem('mn_login')==='1'){ showPage('studentsPage'); } </script>
+
+</body>
 </html>
