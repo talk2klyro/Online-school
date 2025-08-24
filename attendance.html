@@ -1,146 +1,87 @@
-<!<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>MADARASATUN NISA'I — Attendance</title>
+  <meta charset="UTF-8">
+  <title>Attendance – Madarasatun Nisa’i</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-/* same base CSS */
-*{box-sizing:border-box}body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;margin:0;background:#f6f7fb;color:#111}
-.container{max-width:1100px;margin:0 auto;padding:16px}
-.brand{display:flex;justify-content:space-between;align-items:center;padding:16px;border-bottom:1px solid #e5e7eb;background:white;position:sticky;top:0;z-index:10}
-.brand h1{margin:0;font-size:20px;letter-spacing:.5px}
-.brand .motto{margin:4px 0 0 0;font-size:12px;opacity:.8}
-.brand-right p{margin:2px 0;font-size:12px}
-.nav{display:flex;gap:8px;flex-wrap:wrap;padding:12px 16px;background:#fff;border-bottom:1px solid #e5e7eb}
-.nav a{padding:8px 12px;border-radius:12px;text-decoration:none;border:1px solid #e5e7eb;background:#fafafa}
-.nav a:hover{background:#f0f0f0}
-.card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:16px;margin-top:16px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
-.input, select{width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:10px;background:#fff}
-.btn{padding:10px 14px;border:none;border-radius:12px;cursor:pointer}
-.btn.primary{background:#111;color:#fff}
-.btn.ghost{background:#fff;border:1px solid #e5e7eb}
-.table{width:100%;border-collapse:collapse}
-.table th,.table td{padding:10px;border-bottom:1px solid #eee;text-align:left;font-size:14px}
-.table th{background:#fafafa;position:sticky;top:0}
-.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#efefef;font-size:12px}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media (max-width:720px){.row{grid-template-columns:1fr} .brand{flex-direction:column;align-items:flex-start;gap:6px}}
-footer{padding:24px 16px;text-align:center;color:#555}
+    body { font-family: Poppins, sans-serif; background:#f9fafb; margin:0; }
+    header { background:#047857; color:white; text-align:center; padding:1.5rem; }
+    header h1 { margin:0; }
+    table { width:100%; border-collapse:collapse; margin-top:1rem; }
+    th, td { border:1px solid #e5e7eb; padding:0.5rem; text-align:center; }
+    th { background:#047857; color:white; position:sticky; top:0; }
+    tr:nth-child(even) { background:#f3f4f6; }
+    input[type=checkbox] { width:1.2rem; height:1.2rem; }
+    #msg { margin:1rem; font-weight:600; }
   </style>
 </head>
 <body>
-  <header class='brand'>
-    <div class='brand-left'>
-      <h1>MADARASATUN NISA'I</h1>
-      <p class='motto'>ILIMI HASKEN RAYUWA</p>
-    </div>
-    <div class='brand-right'>
-      <p>Email: <a href='mailto:ibrahimsadau6644@gmail.com'>ibrahimsadau6644@gmail.com</a></p>
-      <p>GSM: 07066144944, 08035458742</p>
-    </div>
+  <header>
+    <h1>📅 Attendance Register</h1>
+    <p>Madarasatun Nisa’i – “ILIMI HASKEN RAYUWA”</p>
   </header>
-  <nav class='nav'>
-    <a href='index.html'>Dashboard</a>
-    <a href='add-student.html'>Add Student</a>
-    <a href='attendance.html'>Attendance Register</a>
-    <a href='export.html'>Export</a>
-  </nav>
 
-  <main class="container">
-    <section class="card">
-      <h2>Attendance Register (12 Weeks)</h2>
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-        <input id="filter" class="input" style="max-width:260px" placeholder="Filter by name…" />
-        <span class="badge" id="status">Loading…</span>
-        <a class="btn ghost" href="export.html">Export CSV</a>
-      </div>
-      <div style="overflow:auto;max-height:70vh;margin-top:8px">
-        <table class="table" id="attTable">
-          <thead id="attHead"></thead>
-          <tbody id="attBody"></tbody>
-        </table>
-      </div>
-    </section>
-  </main>
-  <footer>© 2025 MADARASATUN NISA'I</footer>
+  <div id="msg">Loading students...</div>
+  <table id="attendanceTable">
+    <thead>
+      <tr>
+        <th>S/N</th>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Week1</th>
+        <th>Week2</th>
+        <th>Week3</th>
+        <th>Week4</th>
+        <th>Week5</th>
+        <th>Week6</th>
+        <th>Week7</th>
+        <th>Week8</th>
+        <th>Week9</th>
+        <th>Week10</th>
+        <th>Week11</th>
+        <th>Week12</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
   <script>
-    const WEEKS = Array.from({length:12}, (_,i)=>i+1);
-    let rows = [];
-
-    function buildHead() {
-      const weeks = WEEKS.map(w => `<th>W${w}</th>`).join('');
-      const html = `<tr>
-        <th style="min-width:70px">S/N</th>
-        <th style="min-width:220px">Name</th>
-        ${weeks}
-      </tr>`;
-      document.getElementById('attHead').innerHTML = html;
+    async function loadStudents() {
+      const res = await fetch("/api/notion");
+      const students = await res.json();
+      const tbody = document.querySelector("#attendanceTable tbody");
+      tbody.innerHTML = "";
+      students.forEach(student => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${student.serial}</td>
+          <td>${student.name}</td>
+          <td>${student.phone}</td>
+          ${Object.entries(student.weeks).map(([week, present]) =>
+            `<td><input type="checkbox" data-id="${student.id}" data-week="${week}" ${present ? "checked" : ""}></td>`
+          ).join("")}
+        `;
+        tbody.appendChild(tr);
+      });
+      document.getElementById('msg').textContent = "✅ Attendance ready to mark.";
     }
 
-    function render(filter='') {
-      const q = filter.toLowerCase();
-      const body = document.getElementById('attBody');
-      body.innerHTML = '';
-      rows
-        .filter(r => !q || (r.Name||'').toLowerCase().includes(q))
-        .sort((a,b)=>(a.SN||0)-(b.SN||0))
-        .forEach(r => {
-          const tr = document.createElement('tr');
-          let tds = `<td>${r.SN ?? ''}</td><td>${r.Name ?? ''}</td>`;
-          tds += WEEKS.map(w => {
-            const checked = r['Week'+w] ? 'checked' : '';
-            return `<td style="text-align:center"><input type="checkbox" data-pageid="${r.pageId}" data-week="${w}" ${checked}></td>`;
-          }).join('');
-          tr.innerHTML = tds;
-          body.appendChild(tr);
+    // Handle updates
+    document.addEventListener("change", async (e) => {
+      if (e.target.matches("input[type=checkbox]")) {
+        const id = e.target.dataset.id;
+        const week = e.target.dataset.week;
+        const present = e.target.checked;
+        await fetch("/api/notion", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id, week, present })
         });
-    }
-
-    async function load() {
-      try {
-        const ensure = await fetch('/api/ensure-db').then(r=>r.json());
-        if (!ensure.ok) throw new Error(ensure.error || 'Ensure DB failed');
-        const res = await fetch('/api/students');
-        const data = await res.json();
-        rows = data.students || [];
-        document.getElementById('status').textContent = 'Loaded ' + rows.length + ' records';
-        buildHead();
-        render();
-      } catch (e) {
-        console.error(e);
-        document.getElementById('status').textContent = '⚠️ ' + e.message;
-      }
-    }
-
-    document.addEventListener('change', async (e) => {
-      const el = e.target;
-      if (el && el.matches('input[type="checkbox"][data-pageid]')) {
-        const pageId = el.getAttribute('data-pageid');
-        const week = Number(el.getAttribute('data-week'));
-        const present = el.checked;
-        const prev = !present;
-        try {
-          const res = await fetch('/api/attendance', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ pageId, week, present })
-          });
-          const data = await res.json();
-          if (!res.ok) throw new Error(data.error || 'Failed');
-          document.getElementById('status').textContent = 'Saved ✓';
-          setTimeout(()=>{document.getElementById('status').textContent='Ready'}, 800);
-        } catch (err) {
-          alert('Save failed: ' + err.message);
-          el.checked = prev; // revert
-        }
       }
     });
 
-    document.getElementById('filter').addEventListener('input', (e)=>render(e.target.value));
-
-    load();
+    loadStudents();
   </script>
 </body>
 </html>
