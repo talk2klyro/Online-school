@@ -1,125 +1,148 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>MADARASATUN NISA'I — Dashboard</title>
+  <meta charset="UTF-8">
+  <title>Madarasatun Nisa’i – Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
-*{box-sizing:border-box}body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;margin:0;background:#f6f7fb;color:#111}
-.container{max-width:1100px;margin:0 auto;padding:16px}
-.brand{display:flex;justify-content:space-between;align-items:center;padding:16px;border-bottom:1px solid #e5e7eb;background:white;position:sticky;top:0;z-index:10}
-.brand h1{margin:0;font-size:20px;letter-spacing:.5px}
-.brand .motto{margin:4px 0 0 0;font-size:12px;opacity:.8}
-.brand-right p{margin:2px 0;font-size:12px}
-.nav{display:flex;gap:8px;flex-wrap:wrap;padding:12px 16px;background:#fff;border-bottom:1px solid #e5e7eb}
-.nav a{padding:8px 12px;border-radius:12px;text-decoration:none;border:1px solid #e5e7eb;background:#fafafa}
-.nav a:hover{background:#f0f0f0}
-.card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:16px;margin-top:16px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
-.input, select{width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:10px;background:#fff}
-.btn{padding:10px 14px;border:none;border-radius:12px;cursor:pointer}
-.btn.primary{background:#111;color:#fff}
-.btn.ghost{background:#fff;border:1px solid #e5e7eb}
-.table{width:100%;border-collapse:collapse}
-.table th,.table td{padding:10px;border-bottom:1px solid #eee;text-align:left;font-size:14px}
-.table th{background:#fafafa;position:sticky;top:0}
-.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#efefef;font-size:12px}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media (max-width:720px){.row{grid-template-columns:1fr} .brand{flex-direction:column;align-items:flex-start;gap:6px}}
-footer{padding:24px 16px;text-align:center;color:#555}
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background-color: #f9fafb;
+      color: #111827;
+    }
+
+    header {
+      background: #047857;
+      color: white;
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 600;
+    }
+    header p {
+      margin: 0.25rem 0 0;
+      font-size: 1rem;
+      color: #d1fae5;
+      font-weight: 400;
+    }
+
+    main {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+    .card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 1rem;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      text-align: center;
+    }
+    .card h2 {
+      margin: 0;
+      font-size: 2rem;
+      color: #047857;
+    }
+    .card p {
+      margin: 0.5rem 0 0;
+      color: #374151;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+    }
+    .btn {
+      background: #047857;
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 0.75rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn:hover {
+      background: #065f46;
+      transform: translateY(-2px);
+    }
+    .btn:active {
+      background: #064e3b;
+      transform: translateY(0);
+    }
+
+    footer {
+      background: #f3f4f6;
+      padding: 1rem;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #374151;
+    }
+    footer p {
+      margin: 0.25rem 0;
+    }
   </style>
 </head>
 <body>
-  <header class='brand'>
-    <div class='brand-left'>
-      <h1>MADARASATUN NISA'I</h1>
-      <p class='motto'>ILIMI HASKEN RAYUWA</p>
-    </div>
-    <div class='brand-right'>
-      <p>Email: <a href='mailto:ibrahimsadau6644@gmail.com'>ibrahimsadau6644@gmail.com</a></p>
-      <p>GSM: 07066144944, 08035458742</p>
-    </div>
-  </header>
-  <nav class='nav'>
-    <a href='index.html'>Dashboard</a>
-    <a href='add-student.html'>Add Student</a>
-    <a href='attendance.html'>Attendance Register</a>
-    <a href='export.html'>Export</a>
-  </nav>
 
-  <main class="container">
-    <section class="card">
-      <h2>Dashboard</h2>
-      <div class="row" style="margin-top:12px">
-        <div class="card">
-          <h3>Quick Stats</h3>
-          <div id="stats">Initializing…</div>
-        </div>
-        <div class="card">
-          <h3>Search Students</h3>
-          <input id="search" class="input" placeholder="Type a name or phone…" />
-        </div>
+  <header>
+    <h1>Madarasatun Nisa’i</h1>
+    <p>“ILIMI HASKEN RAYUWA”</p>
+  </header>
+
+  <main>
+    <!-- Quick Stats -->
+    <section class="cards">
+      <div class="card">
+        <h2 id="total-students">📖 0</h2>
+        <p>Total Students</p>
+      </div>
+      <div class="card">
+        <h2 id="avg-attendance">📅 0%</h2>
+        <p>Average Attendance</p>
       </div>
     </section>
 
-    <section class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
-        <h3>Students</h3>
-        <a class="btn ghost" href="add-student.html">+ Add Student</a>
-      </div>
-      <div style="overflow:auto;max-height:60vh;margin-top:8px">
-        <table class="table" id="studentsTable">
-          <thead>
-            <tr>
-              <th style="width:80px">S/N</th>
-              <th>Name</th>
-              <th style="width:160px">Phone</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
+    <!-- Actions -->
+    <section class="actions">
+      <button class="btn" onclick="goTo('add-student.html')">➕ Add Student</button>
+      <button class="btn" onclick="goTo('attendance.html')">📝 Mark Attendance</button>
+      <button class="btn" onclick="goTo('export.html')">📤 Export Register</button>
     </section>
   </main>
-  <footer>© 2025 MADARASATUN NISA'I</footer>
+
+  <footer>
+    <p>📧 ibrahimsadau6644@gmail.com</p>
+    <p>📞 07066144944 | 08035458742</p>
+  </footer>
 
   <script>
-    const state = { students: [] };
-
-    async function ensureDB() {
-      const res = await fetch('/api/ensure-db');
-      const data = await res.json();
-      if (!data.ok) throw new Error(data.error || 'Ensure DB failed');
-      return data;
+    // Navigation helper
+    function goTo(page) {
+      window.location.href = page;
     }
 
-    async function fetchStudents() {
-      const res = await fetch('/api/students');
-      const data = await res.json();
-      state.students = data.students || [];
-      renderStudents();
-      document.getElementById('stats').innerHTML = `Total Students: <b>${state.students.length}</b>`;
-    }
-
-    function renderStudents(filter='') {
-      const tbody = document.querySelector('#studentsTable tbody');
-      tbody.innerHTML = '';
-      const q = filter.toLowerCase();
-      state.students
-        .filter(s => !q || (s.Name||'').toLowerCase().includes(q) || (s.Phone||'').toLowerCase().includes(q))
-        .sort((a,b) => (a.SN||0)-(b.SN||0))
-        .forEach(s => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `<td>${s.SN ?? ''}</td><td>${s.Name ?? ''}</td><td>${s.Phone ?? ''}</td>`;
-          tbody.appendChild(tr);
-        });
-    }
-
-    document.getElementById('search').addEventListener('input', (e) => renderStudents(e.target.value));
-
-    ensureDB().then(fetchStudents).catch(err => {
-      console.error(err);
-      document.getElementById('stats').innerHTML = '<span class="badge">Failed to init DB. Check env vars on Vercel.</span>';
-    });
+    // Demo stats (later fetch from backend)
+    document.getElementById('total-students').innerText = "📖 " + 25;
+    document.getElementById('avg-attendance').innerText = "📅 " + 87 + "%";
   </script>
 </body>
-</html>
+  </html>
