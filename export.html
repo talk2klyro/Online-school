@@ -27,6 +27,8 @@
   </header>
 
   <button onclick="downloadCSV()">⬇️ Download Attendance (CSV)</button>
+  <br>
+  <button onclick="downloadExcel()">⬇️ Download Attendance (Excel)</button>
 
   <script>
     async function downloadCSV() {
@@ -36,6 +38,18 @@
       const a = document.createElement("a");
       a.href = url;
       a.download = "attendance.csv";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+
+    async function downloadExcel() {
+      const res = await fetch("/api/notion?export=xlsx");
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "attendance.xlsx";
       document.body.appendChild(a);
       a.click();
       a.remove();
