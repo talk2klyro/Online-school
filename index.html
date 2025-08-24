@@ -1,148 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Madarasatun Nisa’i – Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Poppins', sans-serif;
-      background-color: #f9fafb;
-      color: #111827;
-    }
-
-    header {
-      background: #047857;
-      color: white;
-      text-align: center;
-      padding: 2rem 1rem;
-    }
-    header h1 {
-      margin: 0;
-      font-size: 2rem;
-      font-weight: 600;
-    }
-    header p {
-      margin: 0.25rem 0 0;
-      font-size: 1rem;
-      color: #d1fae5;
-      font-weight: 400;
-    }
-
-    main {
-      max-width: 900px;
-      margin: 2rem auto;
-      padding: 0 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 2rem;
-    }
-
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-    }
-    .card {
-      background: white;
-      padding: 1.5rem;
-      border-radius: 1rem;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-      text-align: center;
-    }
-    .card h2 {
-      margin: 0;
-      font-size: 2rem;
-      color: #047857;
-    }
-    .card p {
-      margin: 0.5rem 0 0;
-      color: #374151;
-    }
-
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 1rem;
-    }
-    .btn {
-      background: #047857;
-      color: white;
-      border: none;
-      padding: 1rem 2rem;
-      border-radius: 0.75rem;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
-    }
-    .btn:hover {
-      background: #065f46;
-      transform: translateY(-2px);
-    }
-    .btn:active {
-      background: #064e3b;
-      transform: translateY(0);
-    }
-
-    footer {
-      background: #f3f4f6;
-      padding: 1rem;
-      text-align: center;
-      font-size: 0.9rem;
-      color: #374151;
-    }
-    footer p {
-      margin: 0.25rem 0;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Madarasatun Nisa’i Attendance Export</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 40px; background: #f4f4f9; }
+  h1 { color: #333; }
+  select, button { padding: 12px 16px; font-size: 16px; margin-right: 10px; }
+  button { cursor: pointer; background: #4CAF50; color: white; border: none; border-radius: 6px; }
+  button:hover { background: #45a049; }
+  #status { margin-top: 20px; font-weight: bold; }
+</style>
 </head>
 <body>
 
-  <header>
-    <h1>Madarasatun Nisa’i</h1>
-    <p>“ILIMI HASKEN RAYUWA”</p>
-  </header>
+<h1>Madarasatun Nisa’i Attendance Export</h1>
 
-  <main>
-    <!-- Quick Stats -->
-    <section class="cards">
-      <div class="card">
-        <h2 id="total-students">📖 0</h2>
-        <p>Total Students</p>
-      </div>
-      <div class="card">
-        <h2 id="avg-attendance">📅 0%</h2>
-        <p>Average Attendance</p>
-      </div>
-    </section>
+<select id="studentSelect">
+  <option value="">All Students</option>
+</select>
+<button id="exportBtn">Download Attendance Excel</button>
+<div id="status"></div>
 
-    <!-- Actions -->
-    <section class="actions">
-      <button class="btn" onclick="goTo('add-student.html')">➕ Add Student</button>
-      <button class="btn" onclick="goTo('attendance.html')">📝 Mark Attendance</button>
-      <button class="btn" onclick="goTo('export.html')">📤 Export Register</button>
-    </section>
-  </main>
+<script>
+const btn = document.getElementById('exportBtn');
+const status = document.getElementById('status');
+const select = document.getElementById('studentSelect');
 
-  <footer>
-    <p>📧 ibrahimsadau6644@gmail.com</p>
-    <p>📞 07066144944 | 08035458742</p>
-  </footer>
+// Fetch student names to populate dropdown
+async function loadStudents() {
+  try {
+    const res = await fetch("/api/notion"); // JSON endpoint
+    if(!res.ok) throw new Error("Failed to fetch student list");
+    const students = await res.json();
 
-  <script>
-    // Navigation helper
-    function goTo(page) {
-      window.location.href = page;
-    }
+    students.forEach(name => {
+      const option = document.createElement("option");
+      option.value = name;
+      option.textContent = name;
+      select.appendChild(option);
+    });
+  } catch(e) {
+    console.error(e);
+    status.textContent = "❌ Error loading students: " + e.message;
+  }
+}
+loadStudents();
 
-    // Demo stats (later fetch from backend)
-    document.getElementById('total-students').innerText = "📖 " + 25;
-    document.getElementById('avg-attendance').innerText = "📅 " + 87 + "%";
-  </script>
+btn.addEventListener('click', async () => {
+  const studentName = select.value;
+  status.textContent = "Generating Excel file...";
+  try {
+    const query = studentName ? `?export=xlsx&student=${encodeURIComponent(studentName)}` : "?export=xlsx";
+    const response = await fetch("/api/notion" + query);
+    if(!response.ok) throw new Error("Network response was not ok");
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "madarasatun_nisai_attendance.xlsx";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+
+    status.textContent = "✅ Download complete!";
+  } catch(e) {
+    console.error(e);
+    status.textContent = "❌ Error generating Excel: " + e.message;
+  }
+});
+</script>
+
 </body>
-  </html>
+</html>
