@@ -1,107 +1,42 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>MADARASATUN NISA'I — Add Student</title>
-  <style>
-/* same base CSS as index (kept inline) */
-*{box-sizing:border-box}body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;margin:0;background:#f6f7fb;color:#111}
-.container{max-width:1100px;margin:0 auto;padding:16px}
-.brand{display:flex;justify-content:space-between;align-items:center;padding:16px;border-bottom:1px solid #e5e7eb;background:white;position:sticky;top:0;z-index:10}
-.brand h1{margin:0;font-size:20px;letter-spacing:.5px}
-.brand .motto{margin:4px 0 0 0;font-size:12px;opacity:.8}
-.brand-right p{margin:2px 0;font-size:12px}
-.nav{display:flex;gap:8px;flex-wrap:wrap;padding:12px 16px;background:#fff;border-bottom:1px solid #e5e7eb}
-.nav a{padding:8px 12px;border-radius:12px;text-decoration:none;border:1px solid #e5e7eb;background:#fafafa}
-.nav a:hover{background:#f0f0f0}
-.card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:16px;margin-top:16px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
-.input, select{width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:10px;background:#fff}
-.btn{padding:10px 14px;border:none;border-radius:12px;cursor:pointer}
-.btn.primary{background:#111;color:#fff}
-.btn.ghost{background:#fff;border:1px solid #e5e7eb}
-.table{width:100%;border-collapse:collapse}
-.table th,.table td{padding:10px;border-bottom:1px solid #eee;text-align:left;font-size:14px}
-.table th{background:#fafafa;position:sticky;top:0}
-.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#efefef;font-size:12px}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media (max-width:720px){.row{grid-template-columns:1fr} .brand{flex-direction:column;align-items:flex-start;gap:6px}}
-footer{padding:24px 16px;text-align:center;color:#555}
-  </style>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Add Student</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
+body{background:linear-gradient(135deg,#a8edea,#fed6e3);min-height:100vh;padding:40px;display:flex;justify-content:center;align-items:flex-start;}
+.dashboard{width:100%;max-width:600px;}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;}
+.brand-left h1{font-size:2em;color:#fff;}
+.brand-left .motto{font-size:1em;color:#f0f0f0;}
+.brand-right p{color:#fff;font-size:0.9em;}
+.card{backdrop-filter:blur(15px);background: rgba(255,255,255,0.2);border-radius:15px;padding:20px;margin-bottom:20px;box-shadow:0 8px 32px rgba(0,0,0,0.1);transition:transform 0.3s ease,box-shadow 0.3s ease;color:#fff;}
+.card:hover{transform:translateY(-10px);box-shadow:0 15px 40px rgba(0,0,0,0.2);}
+input,button{width:100%;padding:10px;margin-top:10px;border-radius:10px;border:none;}
+button{background: rgba(255,255,255,0.3);color:#fff;cursor:pointer;transition:0.3s;}
+button:hover{background: rgba(255,255,255,0.5);}
+#confetti{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;}
+</style>
 </head>
 <body>
-  <header class='brand'>
-    <div class='brand-left'>
-      <h1>MADARASATUN NISA'I</h1>
-      <p class='motto'>ILIMI HASKEN RAYUWA</p>
-    </div>
-    <div class='brand-right'>
-      <p>Email: <a href='mailto:ibrahimsadau6644@gmail.com'>ibrahimsadau6644@gmail.com</a></p>
-      <p>GSM: 07066144944, 08035458742</p>
-    </div>
-  </header>
-  <nav class='nav'>
-    <a href='index.html'>Dashboard</a>
-    <a href='add-student.html'>Add Student</a>
-    <a href='attendance.html'>Attendance Register</a>
-    <a href='export.html'>Export</a>
-  </nav>
-
-  <main class="container">
-    <section class="card">
-      <h2>Add New Student</h2>
-      <form id="form" class="row" onsubmit="return false;">
-        <div>
-          <label>Full Name</label>
-          <input class="input" id="name" placeholder="e.g., Aisha Musa" required />
-        </div>
-        <div>
-          <label>Phone Number</label>
-          <input class="input" id="phone" placeholder="e.g., 0803..." />
-        </div>
-        <div>
-          <label>Serial Number (optional)</label>
-          <input class="input" id="sn" type="number" min="1" placeholder="Auto if empty" />
-        </div>
-        <div style="align-self:end">
-          <button class="btn primary" id="saveBtn">Save</button>
-        </div>
-      </form>
-      <p id="msg"></p>
-    </section>
-  </main>
-  <footer>© 2025 MADARASATUN NISA'I</footer>
-
-  <script>
-    async function ensureDB() {
-      const res = await fetch('/api/ensure-db');
-      const data = await res.json();
-      if (!data.ok) throw new Error(data.error || 'Ensure DB failed');
-      return data;
-    }
-
-    document.getElementById('saveBtn').addEventListener('click', async () => {
-      const name = document.getElementById('name').value.trim();
-      const phone = document.getElementById('phone').value.trim();
-      const sn = document.getElementById('sn').value.trim();
-      if (!name) return alert('Name is required');
-      const payload = { name, phone };
-      if (sn) payload.sn = Number(sn);
-      try {
-        await ensureDB();
-        const res = await fetch('/api/students', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Failed');
-        document.getElementById('msg').textContent = '✅ Student added (S/N ' + (data.student.SN ?? '') + ').';
-        document.getElementById('form').reset();
-      } catch (e) {
-        document.getElementById('msg').textContent = '❌ ' + e.message;
-      }
-    });
-  </script>
+<div class="dashboard">
+<header><div class="brand-left"><h1>School Name</h1><p class="motto">School Motto</p></div><div class="brand-right"></div></header>
+<div class="card">
+<h2>Add New Student</h2>
+<input type="text" id="student-name" placeholder="Student Name">
+<input type="text" id="student-phone" placeholder="Phone Number">
+<button id="submit-student">Add Student</button>
+</div>
+</div>
+<canvas id="confetti"></canvas>
+<script type="module">
+import { CLIENT } from './config.js';
+document.querySelector('.brand-left h1').textContent=CLIENT.name;
+document.querySelector('.brand-left .motto').textContent=CLIENT.motto;
+document.querySelector('.brand-right').innerHTML=`<p>Email: <a href="mailto:${CLIENT.email}">${CLIENT.email}</a></p><p>GSM: ${CLIENT.phones.join(', ')}</p>`;
+function triggerConfetti(){const c=document.getElementById('confetti'),ctx=c.getContext('2d');c.width=window.innerWidth;c.height=window.innerHeight;const conf=[];for(let i=0;i<100;i++){conf.push({x:Math.random()*c.width,y:Math.random()*c.height-50,r:Math.random()*6+2,dx:(Math.random()-0.5)*4,dy:Math.random()*3+2,color:`hsl(${Math.random()*360},70%,60%)`})}function draw(){ctx.clearRect(0,0,c.width,c.height);conf.forEach(cf=>{ctx.beginPath();ctx.arc(cf.x,cf.y,cf.r,0,Math.PI*2);ctx.fillStyle=cf.color;ctx.fill();cf.x+=cf.dx;cf.y+=cf.dy;if(cf.y>c.height){cf.y=0;cf.x=Math.random()*c.width;}});requestAnimationFrame(draw);}draw();setTimeout(()=>{ctx.clearRect(0,0,c.width,c.height);},2000);}
+document.getElementById('submit-student').addEventListener('click',()=>{alert('Student Added!');triggerConfetti();});
+</script>
 </body>
 </html>
