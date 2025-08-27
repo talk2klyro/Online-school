@@ -1,30 +1,35 @@
-// api/attendance.js
-const { createDatabaseIfMissing, updateAttendance, findBySN } = require("./_notion");
+import { Client } from "@notionhq/client";
 
-module.exports = async (req, res) => {
-  try {
-    await createDatabaseIfMissing(); // ensure exists
-    if (req.method !== "PUT") {
-      res.setHeader("Allow", "PUT");
-      return res.status(405).end("Method Not Allowed");
-    }
-    const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : (req.body || {});
-    const week = Number(body.week);
-    const present = !!body.present;
-    if (!(week >= 1 && week <= 12)) return res.status(400).json({ error: "week must be 1..12" });
+const notion = new Client({ auth: process.env.NOTION_TOKEN });
+const databaseId = process.env.DATABASE_ID;
 
-    let pageId = body.pageId;
-    if (!pageId && body.sn !== undefined && body.sn !== null) {
-      const { databaseId } = await createDatabaseIfMissing();
-      const rec = await findBySN(databaseId, Number(body.sn));
-      if (!rec) return res.status(404).json({ error: "student not found for provided S/N" });
-      pageId = rec.pageId;
-    }
-    if (!pageId) return res.status(400).json({ error: "pageId or sn is required" });
+async function getDatabaseId() {
+  if (databaseId) return databaseId;
+  const parentPageId = process.env.PARENT_PAGE_ID;
+  const children = await notion.blocks.children.list({ block_id: parentPageId });
+  const db = children.results.find((b) => b.type === "child_database");
+  return db.id;
+}
 
-    const updated = await updateAttendance({ pageId, week, present });
-    return res.status(200).json({ message: "attendance updated", student: updated });
-  } catch (e) {
-    res.status(500).json({ ok: false, error: e.message });
+export default async function handler(req, res) {
+  if (req.method !== "PUT") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
-};
+
+  try {
+    const dbId = await getDatabaseId();
+    const { id, week, present } = req.body;
+
+    await notion.pages.update({
+      page_id: id,
+      properties: {
+        [week]: { checkbox: present },
+      },
+    });
+
+    res.status(200).json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Attendance update failed" });
+  }
+}
