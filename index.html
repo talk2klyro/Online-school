@@ -1,59 +1,196 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard - School Admin</title>
-<style>
-  * {margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI', sans-serif;}
-  body {background: linear-gradient(135deg, #a8edea, #fed6e3);min-height:100vh;padding:40px;display:flex;justify-content:center;align-items:flex-start;}
-  .dashboard {width:100%;max-width:1200px;}
-  header {display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;}
-  .brand-left h1 {font-size:2em;color:#fff;}
-  .brand-left .motto {font-size:1em;color:#f0f0f0;}
-  .brand-right p {color:#fff;font-size:0.9em;}
-  .card {backdrop-filter: blur(15px);background: rgba(255,255,255,0.2);border-radius:15px;padding:20px;margin-bottom:20px;box-shadow:0 8px 32px rgba(0,0,0,0.1);transition:transform 0.3s ease, box-shadow 0.3s ease;color:#fff;}
-  .card:hover {transform:translateY(-10px);box-shadow:0 15px 40px rgba(0,0,0,0.2);}
-  table {width:100%;border-collapse:collapse;margin-top:10px;color:#fff;}
-  th, td {padding:12px 15px;text-align:left;}
-  th {background: rgba(255,255,255,0.3);border-radius:10px;}
-  tr:nth-child(even) {background: rgba(255,255,255,0.1);}
-  button {background: rgba(255,255,255,0.3);border:none;padding:10px 20px;border-radius:10px;cursor:pointer;color:#fff;transition:0.3s;}
-  button:hover {background: rgba(255,255,255,0.5);}
-  #confetti {position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Madarasatun Nisa'i — Dashboard</title>
+
+  <style>
+    /* === Minimal Glass / Frosted Minimal Style === */
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+      background: linear-gradient(135deg, #f9f9f9, #eaeaea);
+      color: #111;
+    }
+
+    /* Brand Header */
+    .brand {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .brand .motto {
+      margin: 4px 0 0 0;
+      font-size: 13px;
+      opacity: 0.8;
+    }
+
+    .brand-right p {
+      margin: 2px 0;
+      font-size: 12px;
+    }
+
+    /* Navigation */
+    .nav {
+      display: flex;
+      gap: 10px;
+      padding: 12px 20px;
+      flex-wrap: wrap;
+      background: rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .nav a {
+      text-decoration: none;
+      padding: 8px 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      background: rgba(255, 255, 255, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(8px);
+      color: #111;
+      transition: all 0.2s ease;
+    }
+
+    .nav a:hover {
+      background: rgba(255, 255, 255, 0.5);
+    }
+
+    /* Cards */
+    .card {
+      background: rgba(255, 255, 255, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      padding: 20px;
+      margin: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .card h2 {
+      margin-top: 0;
+    }
+
+    /* Table */
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .table th,
+    .table td {
+      padding: 12px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      font-size: 14px;
+      text-align: left;
+    }
+
+    .table th {
+      background: rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(6px);
+      font-weight: 500;
+    }
+
+    /* Footer */
+    footer {
+      padding: 24px;
+      text-align: center;
+      font-size: 13px;
+      color: #555;
+      background: rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(6px);
+      margin-top: 30px;
+      border-top: 1px solid rgba(255, 255, 255, 0.3);
+    }
+  </style>
 </head>
+
 <body>
-<div class="dashboard">
-  <header>
-    <div class="brand-left"><h1>School Name</h1><p class="motto">School Motto</p></div>
-    <div class="brand-right"></div>
-  </header>
+  <!-- Header -->
+  <div class="brand">
+    <div>
+      <h1>Madarasatun Nisa'i</h1>
+      <p class="motto">ILIMI HASKEN RAYUWA</p>
+    </div>
+    <div class="brand-right">
+      <p>Email: ibrahimsadau6644@gmail.com</p>
+      <p>GSM: 07066144944, 08035458742</p>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="nav">
+    <a href="index.html">Dashboard</a>
+    <a href="add-student.html">Add Student</a>
+    <a href="attendance.html">Attendance</a>
+    <a href="export.html">Export</a>
+  </div>
+
+  <!-- Student List Card -->
   <div class="card">
     <h2>Student List</h2>
-    <table>
-      <thead><tr><th>S/N</th><th>Name</th><th>Phone</th><th>Attendance</th></tr></thead>
-      <tbody id="student-list"></tbody>
+    <table class="table" id="studentTable">
+      <thead>
+        <tr>
+          <th>S/N</th>
+          <th>Name</th>
+          <th>Phone</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Students will be loaded here -->
+      </tbody>
     </table>
   </div>
-  <div class="card">
-    <button id="add-student-btn">Add Student</button>
-    <button id="save-attendance-btn">Save Attendance</button>
-  </div>
-</div>
-<canvas id="confetti"></canvas>
-<script type="module">
-import { CLIENT } from './config.js';
-document.querySelector('.brand-left h1').textContent = CLIENT.name;
-document.querySelector('.brand-left .motto').textContent = CLIENT.motto;
-document.querySelector('.brand-right').innerHTML = `<p>Email: <a href="mailto:${CLIENT.email}">${CLIENT.email}</a></p><p>GSM: ${CLIENT.phones.join(', ')}</p>`;
-const students = [{sn:1,name:'Aliyu Ibrahim',phone:'07066144944',attendance:'Present'},{sn:2,name:'Fatima Usman',phone:'08035458742',attendance:'Absent'}];
-const tbody=document.getElementById('student-list');
-function renderStudents(){tbody.innerHTML='';students.forEach(s=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${s.sn}</td><td>${s.name}</td><td>${s.phone}</td><td>${s.attendance}</td>`;tbody.appendChild(tr);});}
-renderStudents();
-function triggerConfetti(){const c=document.getElementById('confetti'),ctx=c.getContext('2d');c.width=window.innerWidth;c.height=window.innerHeight;const conf=[];for(let i=0;i<100;i++){conf.push({x:Math.random()*c.width,y:Math.random()*c.height-50,r:Math.random()*6+2,dx:(Math.random()-0.5)*4,dy:Math.random()*3+2,color:`hsl(${Math.random()*360},70%,60%)`})}function draw(){ctx.clearRect(0,0,c.width,c.height);conf.forEach(cf=>{ctx.beginPath();ctx.arc(cf.x,cf.y,cf.r,0,Math.PI*2);ctx.fillStyle=cf.color;ctx.fill();cf.x+=cf.dx;cf.y+=cf.dy;if(cf.y>c.height){cf.y=0;cf.x=Math.random()*c.width;}});requestAnimationFrame(draw);}draw();setTimeout(()=>{ctx.clearRect(0,0,c.width,c.height);},2000);}
-document.getElementById('add-student-btn').addEventListener('click',()=>{alert('Student Added!');triggerConfetti();});
-document.getElementById('save-attendance-btn').addEventListener('click',()=>{alert('Attendance Saved!');triggerConfetti();});
-</script>
+
+  <!-- Footer -->
+  <footer>
+    &copy; 2025 Madarasatun Nisa'i
+  </footer>
+
+  <!-- Script -->
+  <script>
+    async function loadStudents() {
+      try {
+        const res = await fetch('/api/students');
+        const data = await res.json();
+        const tbody = document.querySelector('#studentTable tbody');
+        tbody.innerHTML = '';
+        data.forEach((s, i) => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${s.sn || i + 1}</td>
+            <td>${s.name}</td>
+            <td>${s.phone || ''}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        console.error('Error loading students', err);
+      }
+    }
+    loadStudents();
+  </script>
 </body>
 </html>
