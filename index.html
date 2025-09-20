@@ -3,194 +3,471 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Madarasatun Nisa'i — Dashboard</title>
-
-  <style>
-    /* === Minimal Glass / Frosted Minimal Style === */
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
-      background: linear-gradient(135deg, #f9f9f9, #eaeaea);
-      color: #111;
-    }
-
-    /* Brand Header */
-    .brand {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      background: rgba(255, 255, 255, 0.5);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-    }
-
-    .brand h1 {
-      margin: 0;
-      font-size: 22px;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-    }
-
-    .brand .motto {
-      margin: 4px 0 0 0;
-      font-size: 13px;
-      opacity: 0.8;
-    }
-
-    .brand-right p {
-      margin: 2px 0;
-      font-size: 12px;
-    }
-
-    /* Navigation */
-    .nav {
-      display: flex;
-      gap: 10px;
-      padding: 12px 20px;
-      flex-wrap: wrap;
-      background: rgba(255, 255, 255, 0.4);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-    }
-
-    .nav a {
-      text-decoration: none;
-      padding: 8px 14px;
-      border-radius: 12px;
-      font-size: 14px;
-      background: rgba(255, 255, 255, 0.25);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      backdrop-filter: blur(8px);
-      color: #111;
-      transition: all 0.2s ease;
-    }
-
-    .nav a:hover {
-      background: rgba(255, 255, 255, 0.5);
-    }
-
-    /* Cards */
-    .card {
-      background: rgba(255, 255, 255, 0.35);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      backdrop-filter: blur(12px);
-      border-radius: 20px;
-      padding: 20px;
-      margin: 20px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    }
-
-    .card h2 {
-      margin-top: 0;
-    }
-
-    /* Table */
-    .table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    .table th,
-    .table td {
-      padding: 12px;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-      font-size: 14px;
-      text-align: left;
-    }
-
-    .table th {
-      background: rgba(255, 255, 255, 0.4);
-      backdrop-filter: blur(6px);
-      font-weight: 500;
-    }
-
-    /* Footer */
-    footer {
-      padding: 24px;
-      text-align: center;
-      font-size: 13px;
-      color: #555;
-      background: rgba(255, 255, 255, 0.3);
-      backdrop-filter: blur(6px);
-      margin-top: 30px;
-      border-top: 1px solid rgba(255, 255, 255, 0.3);
-    }
-  </style>
+  <title>School Admin SaaS Template</title>
+  <!-- CSS -->
+  <link rel="stylesheet" href="styles.css">
+  <!-- Chart.js for KPI and trend charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- jsPDF for PDF generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- Ably Realtime (for chat, attendance updates) -->
+  <script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
+  <!-- Clerk Auth SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js/dist/clerk.js"></script>
 </head>
-
 <body>
-  <!-- Header -->
-  <div class="brand">
-    <div>
-      <h1>Madarasatun Nisa'i</h1>
-      <p class="motto">ILIMI HASKEN RAYUWA</p>
-    </div>
-    <div class="brand-right">
-      <p>Email: ibrahimsadau6644@gmail.com</p>
-      <p>GSM: 07066144944, 08035458742</p>
-    </div>
-  </div>
+  <!-- Header / Navbar -->
+  <header class="header glassmorphism p-4 flex justify-between items-center shadow-lg">
+    <div class="logo">🏫 School Admin SaaS</div>
+    <nav>
+      <button id="logoutBtn">Logout</button>
+    </nav>
+  </header>
 
-  <!-- Navigation -->
-  <div class="nav">
-    <a href="index.html">Dashboard</a>
-    <a href="add-student.html">Add Student</a>
-    <a href="attendance.html">Attendance</a>
-    <a href="export.html">Export</a>
-  </div>
+  <!-- Main Dashboard -->
+  <main class="dashboard p-6 grid gap-6">
+    <!-- Class Selection -->
+    <section class="card p-4 shadow-md rounded-2xl" id="classSelector">
+      <h2>Select Classes</h2>
+      <select id="select-multiple-classes" multiple class="w-full p-2 border rounded">
+        <!-- Options populated dynamically -->
+      </select>
+      <button id="export-multi-class-pdf" class="mt-3 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+        Export Interactive PDF
+      </button>
+    </section>
 
-  <!-- Student List Card -->
-  <div class="card">
-    <h2>Student List</h2>
-    <table class="table" id="studentTable">
-      <thead>
-        <tr>
-          <th>S/N</th>
-          <th>Name</th>
-          <th>Phone</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Students will be loaded here -->
-      </tbody>
-    </table>
-  </div>
+    <!-- KPI Cards (dynamic) -->
+    <section class="kpi-cards grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="kpiCards">
+      <!-- Cards will be dynamically generated -->
+    </section>
+  </main>
 
-  <!-- Footer -->
-  <footer>
-    &copy; 2025 Madarasatun Nisa'i
+  <!-- Optional Footer -->
+  <footer class="p-4 text-center text-gray-500 text-sm">
+    &copy; 2025 School Admin SaaS
   </footer>
 
-  <!-- Script -->
-  <script>
-    async function loadStudents() {
-      try {
-        const res = await fetch('/api/students');
-        const data = await res.json();
-        const tbody = document.querySelector('#studentTable tbody');
-        tbody.innerHTML = '';
-        data.forEach((s, i) => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${s.sn || i + 1}</td>
-            <td>${s.name}</td>
-            <td>${s.phone || ''}</td>
-          `;
-          tbody.appendChild(tr);
-        });
-      } catch (err) {
-        console.error('Error loading students', err);
+  <!-- Main Script -->
+  <script type="module">
+    // -------------------------
+    // CONFIG & UTILS
+    // -------------------------
+    const fileTypeColors = {
+      Lecture: [59,130,246],
+      Assignment: [16,185,129],
+      Notes: [234,179,8],
+      Default: [0,0,0]
+    };
+
+    function detectSpikes(data) {
+      const mean = data.reduce((a,b)=>a+b,0)/data.length;
+      const stdDev = Math.sqrt(data.map(x => Math.pow(x - mean, 2)).reduce((a,b)=>a+b,0)/data.length);
+      return data.map((v,i)=>({index:i,value:v,isSpike:v>mean+1.5*stdDev}));
+    }
+
+    function createTempCanvas(id,width=400,height=200){
+      const c=document.createElement("canvas"); c.id=id; c.width=width; c.height=height;
+      document.body.appendChild(c); return c;
+    }
+    function destroyTempCanvas(c){document.body.removeChild(c);}
+
+    // -------------------------
+    // CLERK AUTH
+    // -------------------------
+    const clerk = window.Clerk;
+    clerk.load().then(() => {
+      const user = clerk.user;
+      if(user){
+        console.log("User Logged In:", user.fullName, user.email);
+      } else {
+        window.location.href = "/login.html";
+      }
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click",()=>{
+      clerk.signOut().then(()=>window.location.reload());
+    });
+
+    // -------------------------
+    // FETCH DATA FUNCTIONS
+    // -------------------------
+    async function fetchKPIsForClass(classId){
+      const res = await fetch(`/api/kpi_summary?class_id=${classId}`);
+      return res.json();
+    }
+
+    async function fetchKPITrends(classId){
+      const [weeklyRes, monthlyRes] = await Promise.all([
+        fetch(`/analytics/kpi_weekly?class_id=${classId}`),
+        fetch(`/analytics/kpi_monthly?class_id=${classId}`)
+      ]);
+      return {
+        weeklyData: await weeklyRes.json(),
+        monthlyData: await monthlyRes.json()
+      };
+    }
+
+    async function fetchFileSpikes(classId){
+      const res = await fetch(`/analytics/file_spikes?class_id=${classId}`);
+      return res.json();
+    }
+
+    async function fetchResources(classId){
+      const res = await fetch(`/api/resources?class_id=${classId}`);
+      return res.json();
+    }
+
+    async function fetchAllFiles(selectedClassIds){
+      let allFiles = [];
+      for(const classId of selectedClassIds){
+        const resources = await fetchResources(classId);
+        allFiles = allFiles.concat(resources.map(r=>({...r, classId})));
+      }
+      return allFiles;
+    }
+
+    // -------------------------
+    // CHART GENERATION
+    // -------------------------
+    function generateKPICharts(kpi,classId){
+      const topFilesCanvas = createTempCanvas(`topFiles-${classId}`);
+      const topUploadersCanvas = createTempCanvas(`topUploaders-${classId}`);
+
+      new Chart(topFilesCanvas,{type:"pie",data:{
+        labels:kpi.topFiles.map(f=>f.name),
+        datasets:[{data:kpi.topFiles.map(f=>f.downloads),backgroundColor:["#4F46E5","#F59E0B","#10B981","#EF4444","#3B82F6"]}]
+      },options:{responsive:false}});
+
+      new Chart(topUploadersCanvas,{type:"bar",data:{
+        labels:kpi.topUploaders.map(u=>u.name),
+        datasets:[{label:"Uploads",data:kpi.topUploaders.map(u=>u.uploads),backgroundColor:"#6366F1"}]
+      },options:{responsive:false}});
+
+      return {topFilesCanvas,topUploadersCanvas};
+    }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>School Admin SaaS Template</title>
+  <!-- CSS -->
+  <link rel="stylesheet" href="styles.css">
+  <!-- Chart.js for KPI and trend charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- jsPDF for PDF generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- Ably Realtime (for chat, attendance updates) -->
+  <script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
+  <!-- Clerk Auth SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js/dist/clerk.js"></script>
+</head>
+<body>
+  <!-- Header / Navbar -->
+  <header class="header glassmorphism p-4 flex justify-between items-center shadow-lg">
+    <div class="logo">🏫 School Admin SaaS</div>
+    <nav>
+      <button id="logoutBtn">Logout</button>
+    </nav>
+  </header>
+
+  <!-- Main Dashboard -->
+  <main class="dashboard p-6 grid gap-6">
+    <!-- Class Selection -->
+    <section class="card p-4 shadow-md rounded-2xl" id="classSelector">
+      <h2>Select Classes</h2>
+      <select id="select-multiple-classes" multiple class="w-full p-2 border rounded">
+        <!-- Options populated dynamically -->
+      </select>
+      <button id="export-multi-class-pdf" class="mt-3 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+        Export Interactive PDF
+      </button>
+    </section>
+
+    <!-- KPI Cards (dynamic) -->
+    <section class="kpi-cards grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="kpiCards">
+      <!-- Cards will be dynamically generated -->
+    </section>
+  </main>
+
+  <!-- Optional Footer -->
+  <footer class="p-4 text-center text-gray-500 text-sm">
+    &copy; 2025 School Admin SaaS
+  </footer>
+
+  <!-- Main Script -->
+  <script type="module">
+    // -------------------------
+    // CONFIG & UTILS
+    // -------------------------
+    const fileTypeColors = {
+      Lecture: [59,130,246],
+      Assignment: [16,185,129],
+      Notes: [234,179,8],
+      Default: [0,0,0]
+    };
+
+    function detectSpikes(data) {
+      const mean = data.reduce((a,b)=>a+b,0)/data.length;
+      const stdDev = Math.sqrt(data.map(x => Math.pow(x - mean, 2)).reduce((a,b)=>a+b,0)/data.length);
+      return data.map((v,i)=>({index:i,value:v,isSpike:v>mean+1.5*stdDev}));
+    }
+
+    function createTempCanvas(id,width=400,height=200){
+      const c=document.createElement("canvas"); c.id=id; c.width=width; c.height=height;
+      document.body.appendChild(c); return c;
+    }
+    function destroyTempCanvas(c){document.body.removeChild(c);}
+
+    // -------------------------
+    // CLERK AUTH
+    // -------------------------
+    const clerk = window.Clerk;
+    clerk.load().then(() => {
+      const user = clerk.user;
+      if(user){
+        console.log("User Logged In:", user.fullName, user.email);
+      } else {
+        window.location.href = "/login.html";
+      }
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click",()=>{
+      clerk.signOut().then(()=>window.location.reload());
+    });
+
+    // -------------------------
+    // FETCH DATA FUNCTIONS
+    // -------------------------
+    async function fetchKPIsForClass(classId){
+      const res = await fetch(`/api/kpi_summary?class_id=${classId}`);
+      return res.json();
+    }
+
+    async function fetchKPITrends(classId){
+      const [weeklyRes, monthlyRes] = await Promise.all([
+        fetch(`/analytics/kpi_weekly?class_id=${classId}`),
+        fetch(`/analytics/kpi_monthly?class_id=${classId}`)
+      ]);
+      return {
+        weeklyData: await weeklyRes.json(),
+        monthlyData: await monthlyRes.json()
+      };
+    }
+
+    async function fetchFileSpikes(classId){
+      const res = await fetch(`/analytics/file_spikes?class_id=${classId}`);
+      return res.json();
+    }
+
+    async function fetchResources(classId){
+      const res = await fetch(`/api/resources?class_id=${classId}`);
+      return res.json();
+    }
+
+    async function fetchAllFiles(selectedClassIds){
+      let allFiles = [];
+      for(const classId of selectedClassIds){
+        const resources = await fetchResources(classId);
+        allFiles = allFiles.concat(resources.map(r=>({...r, classId})));
+      }
+      return allFiles;
+    }
+
+    // -------------------------
+    // CHART GENERATION
+    // -------------------------
+    function generateKPICharts(kpi,classId){
+      const topFilesCanvas = createTempCanvas(`topFiles-${classId}`);
+      const topUploadersCanvas = createTempCanvas(`topUploaders-${classId}`);
+
+      new Chart(topFilesCanvas,{type:"pie",data:{
+        labels:kpi.topFiles.map(f=>f.name),
+        datasets:[{data:kpi.topFiles.map(f=>f.downloads),backgroundColor:["#4F46E5","#F59E0B","#10B981","#EF4444","#3B82F6"]}]
+      },options:{responsive:false}});
+
+      new Chart(topUploadersCanvas,{type:"bar",data:{
+        labels:kpi.topUploaders.map(u=>u.name),
+        datasets:[{label:"Uploads",data:kpi.topUploaders.map(u=>u.uploads),backgroundColor:"#6366F1"}]
+      },options:{responsive:false}});
+
+      return {topFilesCanvas,topUploadersCanvas};
+    }
+
+    function generateTrendChartWithSpikes(canvas,data,label,color,labels){
+      const spikes=detectSpikes(data);
+      new Chart(canvas,{type:"line",data:{
+        labels:labels,
+        datasets:[{
+          label,
+          data:spikes.map(s=>s.value),
+          borderColor:color,
+          fill:false,
+          pointBackgroundColor:spikes.map(s=>s.isSpike?"#EF4444":color),
+          pointRadius:5
+        }]
+      },options:{responsive:false}});
+    }
+
+    function generateKPITrendCharts(trends,classId){
+      const weeklyCanvas=createTempCanvas(`weekly-${classId}`);
+      const monthlyCanvas=createTempCanvas(`monthly-${classId}`);
+
+      generateTrendChartWithSpikes(weeklyCanvas,trends.weeklyData.uploads,"Uploads","#4F46E5",trends.weeklyData.labels);
+      generateTrendChartWithSpikes(weeklyCanvas,trends.weeklyData.downloads,"Downloads","#10B981",trends.weeklyData.labels);
+      generateTrendChartWithSpikes(monthlyCanvas,trends.monthlyData.uploads,"Uploads","#4F46E5",trends.monthlyData.labels);
+      generateTrendChartWithSpikes(monthlyCanvas,trends.monthlyData.downloads,"Downloads","#10B981",trends.monthlyData.labels);
+
+      return {weeklyCanvas,monthlyCanvas};
+    }
+
+    // -------------------------
+    // PDF GENERATION
+    // -------------------------
+    async function addSpikeAlertsWithLinks(doc,classId,yStart){
+      const fileSpikes = await fetchFileSpikes(classId);
+      if(!fileSpikes.length) return yStart;
+      doc.setFontSize(12);
+      doc.text(`⚠️ File-Level Spike Alerts:`,10,yStart); yStart+=8;
+      fileSpikes.forEach(spike=>{
+        const color=fileTypeColors[spike.category]||fileTypeColors.Default;
+        doc.setTextColor(...color);
+        const text=`${spike.file_name} (${spike.type}) spiked ${spike.count} times during ${spike.week_or_month}`;
+        doc.textWithLink(text,15,yStart,{url:spike.url});
+        yStart+=6;
+        if(yStart>250){doc.addPage(); yStart=20;}
+      });
+      doc.setTextColor(0,0,0);
+      return yStart+5;
+    }
+
+    function addDrillDownTableWithColorLinks(doc,resources,yStart){
+      let y=yStart;
+      doc.setFontSize(10);
+      resources.forEach(r=>{
+        const color=fileTypeColors[r.category]||fileTypeColors.Default;
+        doc.setTextColor(...color);
+        const text=`${r.file_name} | ${r.category} | ${r.uploaded_by} | Downloads: ${r.downloads} | ${new Date(r.created_at).toLocaleDateString()}`;
+        doc.textWithLink(text,10,y,{url:r.url});
+        y+=8;
+        if(y>250){doc.addPage();y=20;}
+      });
+      doc.setTextColor(0,0,0);
+      return y+5;
+    }
+
+    function addSummaryTable(doc,allFiles){
+      doc.addPage();
+      doc.setFontSize(16);
+      doc.text("📋 Summary of All Files",10,20);
+      let y=30;
+      doc.setFontSize(10);
+      allFiles.forEach(file=>{
+        const color=fileTypeColors[file.category]||fileTypeColors.Default;
+        doc.setTextColor(...color);
+        const text=`${file.classId} | ${file.file_name} | ${file.category} | ${file.uploaded_by} | Downloads: ${file.downloads}`;
+        doc.textWithLink(text,10,y,{url:file.url});
+        y+=6;
+        if(y>250){doc.addPage();y=20;}
+      });
+      doc.setTextColor(0,0,0);
+    }
+
+    // -------------------------
+    // EXPORT BUTTON
+    // -------------------------
+    document.getElementById("export-multi-class-pdf").addEventListener("click",async()=>{
+      const { jsPDF }=window.jspdf;
+      const doc = new jsPDF();
+      const selectedOptions=[...document.getElementById("select-multiple-classes").selectedOptions];
+      const selectedClassIds = selectedOptions.map(o=>o.value);
+
+      // Add clickable summary table at start
+      const allFiles = await fetchAllFiles(selectedClassIds);
+      addSummaryTable(doc,allFiles);
+
+      // KPI summary + charts + spike alerts
+      for(const classId of selectedClassIds){
+        const kpi = await fetchKPIsForClass(classId);
+        const trends = await fetchKPITrends(classId);
+
+        doc.addPage();
+        doc.setFontSize(18); doc.text("📈 KPI Summary",10,20);
+        let y=30;
+        doc.setFontSize(14); doc.text(`Class: ${classId}`,10,y); y+=10;
+        doc.setFontSize(12); doc.text(`Total Uploads: ${kpi.totalUploads}`,10,y); y+=8;
+        doc.text(`Total Downloads: ${kpi.totalDownloads}`,10,y); y+=8;
+
+        y = await addSpikeAlertsWithLinks(doc,classId,y);
+
+        const { topFilesCanvas, topUploadersCanvas } = generateKPICharts(kpi,classId);
+        const { weeklyCanvas, monthlyCanvas } = generateKPITrendCharts(trends,classId);
+
+        doc.addImage(topFilesCanvas.toDataURL("image/png"),"PNG",10,y,90,60);
+        doc.addImage(topUploadersCanvas.toDataURL("image/png"), "PNG", 110, y, 90, 60);
+        y += 70;
+
+        doc.addImage(weeklyCanvas.toDataURL("image/png"), "PNG", 10, y, 90, 60);
+        doc.addImage(monthlyCanvas.toDataURL("image/png"), "PNG", 110, y, 90, 60);
+        y += 70;
+
+        // Destroy temporary canvases to free memory
+        [topFilesCanvas, topUploadersCanvas, weeklyCanvas, monthlyCanvas].forEach(destroyTempCanvas);
+      }
+
+      // Drill-down tables for each class
+      for (const classId of selectedClassIds) {
+        const resources = await fetchResources(classId);
+        doc.addPage();
+        doc.setFontSize(16);
+        doc.text(`📊 Class Report - ${classId}`, 10, 20);
+        let y = 30;
+        y = addDrillDownTableWithColorLinks(doc, resources, y);
+
+        // Optional: add aggregated trend charts per class here if needed
+      }
+
+      // Save final PDF
+      doc.save("multi_class_interactive_report.pdf");
+    });
+
+    // -------------------------
+    // INITIALIZATION
+    // -------------------------
+    async function initDashboard() {
+      // Fetch available classes from API and populate select box
+      const res = await fetch("/api/classes");
+      const classes = await res.json();
+      const select = document.getElementById("select-multiple-classes");
+      classes.forEach(c => {
+        const option = document.createElement("option");
+        option.value = c.id;
+        option.textContent = c.name;
+        select.appendChild(option);
+      });
+
+      // Optional: Load KPI cards dynamically if you want a real-time dashboard
+      // Example: fetch first class and display top KPIs on dashboard
+      if(classes.length > 0){
+        const firstClassId = classes[0].id;
+        const kpi = await fetchKPIsForClass(firstClassId);
+        const trends = await fetchKPITrends(firstClassId);
+        const container = document.getElementById("kpiCards");
+
+        // Example KPI Card
+        const card = document.createElement("div");
+        card.className = "card p-4 shadow-md rounded-2xl";
+        card.innerHTML = `
+          <h3>${classes[0].name} KPIs</h3>
+          <p>Total Uploads: ${kpi.totalUploads}</p>
+          <p>Total Downloads: ${kpi.totalDownloads}</p>
+        `;
+        container.appendChild(card);
       }
     }
-    loadStudents();
+
+    initDashboard();
   </script>
 </body>
 </html>
