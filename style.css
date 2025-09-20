@@ -1,0 +1,250 @@
+/* ===================================================
+   School Admin SaaS Template - Upgraded Style Sheet
+   Author: Expert Review & Upgrade
+   Purpose: Complete, maintainable, performance-optimized CSS
+   =================================================== */
+
+/* -------------------------------
+   GLOBAL RESET & BASE STYLES
+-------------------------------- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #1F2937; /* gray-800 */
+  background-color: #F9FAFB; /* gray-50 */
+  scroll-behavior: smooth;
+}
+
+/* Recommendations:
+   ✅ Use system fonts or imported Google Fonts for fast loading
+   ✅ Avoid !important for maintainability
+*/
+
+/* -------------------------------
+   HEADER / NAVBAR
+-------------------------------- */
+.header {
+  width: 100%;
+  backdrop-filter: blur(15px);
+  background-color: rgba(255, 255, 255, 0.65); /* glass effect */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.header .logo {
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: #4F46E5; /* primary purple */
+}
+
+.header nav button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  background-color: #4F46E5;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out, transform 0.15s ease;
+}
+
+.header nav button:hover {
+  background-color: #4338CA;
+  transform: translateY(-1px);
+}
+
+/* -------------------------------
+   DASHBOARD / LAYOUT
+-------------------------------- */
+.dashboard {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  padding: 2rem;
+}
+
+@media(min-width: 768px){
+  .dashboard {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media(min-width: 1024px){
+  .dashboard {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* -------------------------------
+   CARD MODULES
+-------------------------------- */
+.card {
+  background-color: rgba(255, 255, 255, 0.85);
+  border-radius: 1.5rem;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  padding: 1.5rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  backdrop-filter: blur(10px);
+  cursor: default;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.12);
+}
+
+/* -------------------------------
+   BUTTONS
+-------------------------------- */
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+button:focus {
+  outline: 2px solid #4F46E5;
+  outline-offset: 2px;
+}
+
+/* -------------------------------
+   SELECT / INPUT
+-------------------------------- */
+select, input, textarea {
+  font-family: inherit;
+  padding: 0.5rem 1rem;
+  border: 1px solid #D1D5DB; /* gray-300 */
+  border-radius: 0.5rem;
+  background-color: #FFFFFF;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+select:focus, input:focus, textarea:focus {
+  border-color: #4F46E5;
+  box-shadow: 0 0 0 3px rgba(79,70,229,0.2);
+  outline: none;
+}
+
+/* -------------------------------
+   KPI CARDS
+-------------------------------- */
+.kpi-cards .card h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #111827; /* gray-900 */
+}
+
+.kpi-cards .card p {
+  font-size: 0.875rem;
+  color: #374151; /* gray-700 */
+}
+
+/* -------------------------------
+   TABLES / DRILL-DOWN
+-------------------------------- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+}
+
+table th, table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #E5E7EB; /* gray-200 */
+  font-size: 0.875rem;
+  color: #1F2937; /* gray-800 */
+}
+
+table th {
+  background-color: rgba(79,70,229,0.1); /* light purple header */
+  font-weight: 600;
+}
+
+tr:hover td {
+  background-color: rgba(79,70,229,0.05);
+}
+
+/* Color-coded links in drill-down tables */
+a.file-link {
+  text-decoration: none;
+  font-weight: 500;
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+a.file-link:hover {
+  transform: translateX(2px);
+  color: #4F46E5;
+}
+
+/* -------------------------------
+   PDF / EXPORT BUTTONS
+-------------------------------- */
+#export-multi-class-pdf {
+  background-color: #4F46E5;
+  color: white;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  transition: background 0.2s ease;
+}
+
+#export-multi-class-pdf:hover {
+  background-color: #4338CA;
+}
+
+/* -------------------------------
+   FOOTER
+-------------------------------- */
+footer {
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.875rem;
+  color: #6B7280; /* gray-500 */
+}
+
+/* -------------------------------
+   RESPONSIVE MEDIA QUERIES
+-------------------------------- */
+@media (max-width: 640px) {
+  .header { flex-direction: column; gap: 0.5rem; }
+  .dashboard { grid-template-columns: 1fr; }
+}
+
+/* -------------------------------
+   UTILITY CLASSES
+-------------------------------- */
+.text-center { text-align: center; }
+.text-bold { font-weight: 600; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-4 { margin-top: 1rem; }
+.p-4 { padding: 1rem; }
+.p-6 { padding: 1.5rem; }
+.shadow-lg { box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+
+/* -------------------------------
+   ACTIONABLE RECOMMENDATIONS
+-------------------------------- */
+/* 1. Keep colors and themes centralized in CSS variables for future multi-client theming. */
+/* 2. Consider CSS grid for dynamic KPI card layouts to improve responsiveness. */
+/* 3. Use lightweight transitions for hover effects for performance on mobile devices. */
+/* 4. All cards and buttons use glassmorphism and shadows for consistency; extend to modals if added. */
+/* 5. Add :focus-visible for accessibility for keyboard navigation. */
+/* 6. Consider splitting into multiple CSS files for modularity in large projects. */
+/* 7. Lazy-load chart canvas styles only when charts are generated for memory/performance optimization. */
