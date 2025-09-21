@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up | School Admin SaaS</title>
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Magic SDK -->
+  <script type="module">
+    import { Magic } from 'https://cdn.jsdelivr.net/npm/magic-sdk/dist/magic.js';
+    window.magic = new Magic(import.meta.env.VITE_MAGIC_KEY);
+  </script>
+</head>
+<body>
+  <main class="auth-container">
+    <div class="auth-card glass-card">
+      <h1>Create Your Account ✨</h1>
+      <p class="subtitle">Join and manage attendance easily</p>
+
+      <form id="signupForm">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" placeholder="John Doe" required />
+
+        <label for="email">Email Address</label>
+        <input type="email" id="email" placeholder="you@example.com" required />
+
+        <label for="role">Role</label>
+        <select id="role" required>
+          <option value="">-- Select Role --</option>
+          <option value="admin">Admin</option>
+          <option value="teacher">Teacher</option>
+          <option value="student">Student</option>
+        </select>
+
+        <button type="submit" class="btn-primary">Sign Up</button>
+      </form>
+
+      <div id="message" class="message"></div>
+
+      <p class="small-text">
+        Already have an account? <a href="login.html">Login here</a>.
+      </p>
+    </div>
+  </main>
+
+  <script type="module">
+    const form = document.getElementById('signupForm');
+    const messageBox = document.getElementById('message');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const role = document.getElementById('role').value;
+
+      try {
+        messageBox.textContent = "Registering...";
+
+        // Step 1: Authenticate with Magic link
+        await window.magic.auth.loginWithMagicLink({ email });
+
+        // Step 2: Send user data to backend (Neon DB)
+        const res = await fetch('/api/users', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, role })
+        });
+
+        if (!res.ok) throw new Error("Failed to save user.");
+
+        messageBox.textContent = "✅ Account created! Redirecting...";
+
+        setTimeout(() => window.location.href = "index.html", 1500);
+      } catch (err) {
+        console.error("Signup failed:", err);
+        messageBox.textContent = "❌ Signup failed. Try again.";
+      }
+    });
+  </script>
+</body>
+</html>
