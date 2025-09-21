@@ -1,250 +1,422 @@
 /* ===================================================
-   School Admin SaaS Template - Upgraded Style Sheet
-   Author: Expert Review & Upgrade
-   Purpose: Complete, maintainable, performance-optimized CSS
+   style.css — Advanced, Bento-style UI + Bubble Buttons
+   Generated: 2025-09-21
+   Author: GPT-5 Thinking mini (upgraded for School Admin SaaS)
+   Purpose: Bento layout, emoji bubble buttons, dark mode, utilities,
+            accessibility-first, modular-ready CSS variables.
    =================================================== */
 
-/* -------------------------------
-   GLOBAL RESET & BASE STYLES
--------------------------------- */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* ===================================================
+   DESIGN TOKENS (CSS Variables)
+   Centralize colors, spacing, shadows, radii for easy theming.
+   Change only variables below to re-theme the system.
+   =================================================== */
+:root{
+  /* Colors */
+  --bg: #F9FAFB;                /* gray-50 */
+  --surface: #FFFFFF;           /* card background */
+  --muted: #6B7280;             /* gray-500 */
+  --text: #111827;              /* gray-900 */
+  --primary-500: #4F46E5;       /* purple */
+  --primary-600: #4338CA;
+  --accent-500: #10B981;        /* green */
+  --danger-500: #EF4444;        /* red */
+  --glass: rgba(255,255,255,0.75);
+
+  /* Spacing */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2.5rem;
+
+  /* Radii & shadows */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --card-shadow: 0 10px 24px rgba(2,6,23,0.08);
+  --glass-shadow: 0 8px 18px rgba(2,6,23,0.06);
+
+  /* Typography */
+  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  --font-size-base: 16px;
+  --line-height-base: 1.5;
+
+  /* Animations */
+  --ease-fast: cubic-bezier(.2,.8,.2,1);
 }
 
+/* Dark theme variables (toggle with data-theme="dark" on <html>) */
+:root[data-theme="dark"], @media (prefers-color-scheme: dark){
+  --bg: #0B1220;              /* deep slate background */
+  --surface: rgba(17,24,39,0.85);
+  --muted: #94A3B8;
+  --text: #F8FAFC;
+  --primary-500: #6366F1;
+  --primary-600: #4F46E5;
+  --accent-500: #34D399;
+  --danger-500: #F87171;
+  --glass: rgba(255,255,255,0.04);
+  --card-shadow: 0 8px 20px rgba(2,6,23,0.6);
+  --glass-shadow: 0 6px 16px rgba(2,6,23,0.55);
+}
+
+/* ===================================================
+   GLOBAL RESET & BASE
+   - respectful of user preferences
+   - no !important
+   =================================================== */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
 html, body {
-  font-family: 'Inter', sans-serif;
-  font-size: 16px;
-  line-height: 1.5;
-  color: #1F2937; /* gray-800 */
-  background-color: #F9FAFB; /* gray-50 */
+  height: 100%;
+  font-family: var(--font-sans);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
   scroll-behavior: smooth;
 }
 
-/* Recommendations:
-   ✅ Use system fonts or imported Google Fonts for fast loading
-   ✅ Avoid !important for maintainability
-*/
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  :root { --ease-fast: linear; }
+  * { scroll-behavior: auto !important; animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}
 
-/* -------------------------------
-   HEADER / NAVBAR
--------------------------------- */
+/* Accessibility */
+:focus { outline: none; }
+:focus-visible { outline: 3px solid color-mix(in srgb, var(--primary-500) 70%, transparent); outline-offset: 2px; border-radius: 6px; }
+
+/* =============================================================================
+   LAYOUT CONTAINER
+   ============================================================================= */
+.container {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 var(--space-md);
+}
+
+/* Header / Nav (consistent with Index & Attendance pages) */
 .header {
   width: 100%;
-  backdrop-filter: blur(15px);
-  background-color: rgba(255, 255, 255, 0.65); /* glass effect */
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 2rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding: calc(var(--space-sm) + 0.25rem) var(--space-md);
+  background: linear-gradient(180deg, var(--glass), transparent);
+  backdrop-filter: blur(10px);
   position: sticky;
   top: 0;
   z-index: 1000;
+  box-shadow: var(--glass-shadow);
 }
 
+/* header logo */
 .header .logo {
   font-weight: 700;
-  font-size: 1.25rem;
-  color: #4F46E5; /* primary purple */
+  font-size: 1.125rem;
+  color: var(--primary-600);
+  display:flex;
+  gap: .5rem;
+  align-items:center;
 }
 
+/* header nav links */
+.header nav {
+  display:flex;
+  gap: .75rem;
+  align-items:center;
+}
+.header nav a {
+  text-decoration:none;
+  color: var(--muted);
+  padding: .45rem .6rem;
+  border-radius: 8px;
+  font-size: .95rem;
+}
+.header nav a:hover { color: var(--text); background: rgba(79,70,229,0.04); }
+
+/* small ghost button in header (logout, profile) */
 .header nav button {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 0.5rem;
-  background-color: #4F46E5;
-  color: white;
-  font-weight: 500;
+  background: transparent;
+  border: 1px solid rgba(15,23,42,0.06);
+  padding: .45rem .7rem;
+  border-radius: 10px;
   cursor: pointer;
-  transition: background 0.2s ease-in-out, transform 0.15s ease;
+  color: var(--muted);
 }
+.header nav button:hover { transform: translateY(-1px); color: var(--text); }
 
-.header nav button:hover {
-  background-color: #4338CA;
-  transform: translateY(-1px);
-}
-
-/* -------------------------------
-   DASHBOARD / LAYOUT
--------------------------------- */
-.dashboard {
+/* =============================================================================
+   BENTO GRID (responsive, auto-fit)
+   - Use .bento-grid container; card children use .bento-card
+   - Helpers .span-2, .span-3, etc available
+   ============================================================================= */
+.bento-grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem;
-  padding: 2rem;
+  gap: var(--space-lg);
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  align-items: start;
+  grid-auto-rows: minmax(120px, auto);
 }
 
-@media(min-width: 768px){
-  .dashboard {
-    grid-template-columns: repeat(2, 1fr);
-  }
+/* Card base (bento-card) */
+.bento-card, .card {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  box-shadow: var(--card-shadow);
+  transition: transform 180ms var(--ease-fast), box-shadow 180ms var(--ease-fast);
+  border: 1px solid rgba(15,23,42,0.03);
+  min-height: 80px;
+  will-change: transform;
+}
+.bento-card:hover, .card:hover { transform: translateY(-6px); box-shadow: 0 18px 38px rgba(2,6,23,0.08); }
+
+/* Size helpers for bento cards */
+.bento-card--large { grid-column: span 2; }
+.bento-card--tall { grid-row: span 2; }
+.bento-card--feature { grid-column: span 2; grid-row: span 2; }
+
+/* explicit utility to span columns in small screens gracefully */
+@media (max-width: 640px){
+  .bento-card--large, .bento-card--feature { grid-column: span 1; grid-row: auto; }
 }
 
-@media(min-width: 1024px){
-  .dashboard {
-    grid-template-columns: repeat(3, 1fr);
-  }
+/* =============================================================================
+   KPI / CARD MICRO LAYOUT
+   ============================================================================= */
+.kpi {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: var(--space-md);
 }
+.kpi .meta { display:flex; flex-direction:column; gap: 0.15rem; }
+.kpi .meta .label { font-size: .82rem; color: var(--muted); }
+.kpi .meta .value { font-size: 1.5rem; font-weight:700; color: var(--text); }
+.kpi .spark { width: 160px; height: 36px; }
 
-/* -------------------------------
-   CARD MODULES
--------------------------------- */
-.card {
-  background-color: rgba(255, 255, 255, 0.85);
-  border-radius: 1.5rem;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-  padding: 1.5rem;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  backdrop-filter: blur(10px);
-  cursor: default;
-}
+/* =============================================================================
+   BUBBLE BUTTONS (emoji-focused)
+   - Use <button class="bubble-btn" data-emoji="📊">Analytics</button>
+   - Or <button class="bubble-btn"><span class="emoji">📊</span>Analytics</button>
+   - Palette variants available: --primary, --accent, --ghost, --danger
+   ============================================================================= */
 
-.card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 28px rgba(0,0,0,0.12);
-}
-
-/* -------------------------------
-   BUTTONS
--------------------------------- */
-button {
-  font-family: inherit;
-  cursor: pointer;
+/* base */
+.bubble-btn {
+  display:inline-flex;
+  align-items:center;
+  gap: .6rem;
+  padding: .55rem .9rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: .95rem;
+  cursor:pointer;
   border: none;
-  border-radius: 0.5rem;
-  transition: all 0.2s ease;
+  min-height: 44px;
+  box-shadow: 0 8px 18px rgba(2,6,23,0.06);
+  transition: transform 180ms var(--ease-fast), box-shadow 180ms var(--ease-fast), opacity 120ms linear;
+  background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+  color: #fff;
 }
 
-button:focus {
-  outline: 2px solid #4F46E5;
-  outline-offset: 2px;
+/* emoji circle to the left */
+.bubble-btn .emoji {
+  display:inline-grid;
+  place-items:center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.12);
+  font-size: 1.15rem;
+  box-shadow: 0 6px 12px rgba(2,6,23,0.06);
 }
 
-/* -------------------------------
-   SELECT / INPUT
--------------------------------- */
-select, input, textarea {
-  font-family: inherit;
-  padding: 0.5rem 1rem;
-  border: 1px solid #D1D5DB; /* gray-300 */
-  border-radius: 0.5rem;
-  background-color: #FFFFFF;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+/* allow using data-emoji attribute instead of inline span */
+.bubble-btn::before {
+  content: attr(data-emoji);
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  margin-right: .45rem;
+  background: rgba(255,255,255,0.12);
+  font-size: 1.2rem;
+  line-height: 1;
 }
 
-select:focus, input:focus, textarea:focus {
-  border-color: #4F46E5;
-  box-shadow: 0 0 0 3px rgba(79,70,229,0.2);
+/* variant: ghost (light outline) */
+.bubble-btn--ghost {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid rgba(15,23,42,0.06);
+  box-shadow: none;
+}
+.bubble-btn--ghost::before { background: transparent; }
+
+/* variant: accent */
+.bubble-btn--accent { background: linear-gradient(135deg, var(--accent-500), color-mix(in srgb, var(--accent-500) 70%, #fff)); color:#fff; }
+.bubble-btn--danger { background: linear-gradient(135deg, var(--danger-500), color-mix(in srgb, var(--danger-500) 70%, #fff)); color:#fff; }
+
+/* small/large sizes */
+.bubble-btn--sm { padding: .35rem .6rem; font-size: .9rem; gap:.45rem; min-height:36px; }
+.bubble-btn--lg { padding: .85rem 1.2rem; font-size:1rem; gap:.7rem; min-height:52px; }
+
+/* hover / active micro-interactions */
+.bubble-btn:hover { transform: translateY(-3px) scale(1.01); box-shadow: 0 14px 32px rgba(2,6,23,0.09); }
+.bubble-btn:active { transform: translateY(0) scale(.99); opacity: .98; }
+
+/* accessible focus */
+.bubble-btn:focus-visible { outline: 3px solid color-mix(in srgb, var(--primary-500) 60%, transparent); outline-offset: 3px; }
+
+/* =============================================================================
+   TABLES (attendance & drill-down)
+   - Responsive table wrapper .table-scroll
+   - Sticky header, zebra rows, color-coded cells by class/category
+   ============================================================================= */
+.table-scroll { overflow:auto; -webkit-overflow-scrolling:touch; border-radius: 12px; }
+table { width:100%; border-collapse: collapse; min-width: 720px; }
+thead th {
+  position: sticky; top:0; z-index: 2;
+  background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.9));
+  border-bottom: 1px solid rgba(15,23,42,0.06);
+  font-weight: 600;
+}
+tbody tr:nth-child(even) td { background: rgba(15,23,42,0.02); }
+
+table th, table td {
+  padding: .65rem .85rem; text-align: left; font-size: .94rem;
+  border-bottom: 1px solid rgba(15,23,42,0.04);
+}
+
+/* color-coded link style for resource rows */
+a.file-link {
+  display:inline-flex; align-items:center; gap:.4rem; text-decoration:none;
+  color: var(--primary-600); transition: transform 120ms var(--ease-fast);
+}
+a.file-link:hover { transform: translateX(3px); color: var(--primary-500); }
+
+/* =============================================================================
+   FORMS (inputs/selects)
+   ============================================================================= */
+input[type="text"], input[type="email"], select, textarea {
+  width:100%;
+  padding: .6rem .75rem;
+  border-radius: 10px;
+  border: 1px solid rgba(15,23,42,0.06);
+  background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.96));
+}
+input:focus, select:focus, textarea:focus {
+  box-shadow: 0 6px 20px rgba(79,70,229,0.08);
+  border-color: var(--primary-500);
   outline: none;
 }
 
-/* -------------------------------
-   KPI CARDS
--------------------------------- */
-.kpi-cards .card h3 {
-  font-size: 1.125rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-  color: #111827; /* gray-900 */
-}
+/* compact form row */
+.form-row { display:flex; gap: .6rem; align-items:center; }
+.form-row > * { flex:1; }
 
-.kpi-cards .card p {
-  font-size: 0.875rem;
-  color: #374151; /* gray-700 */
-}
+/* =============================================================================
+   CHART CONTAINER & RESPONSIVE CANVAS
+   ============================================================================= */
+.canvas-wrap { position:relative; width:100%; min-height:150px; }
+canvas { width:100% !important; height:auto !important; display:block; }
 
-/* -------------------------------
-   TABLES / DRILL-DOWN
--------------------------------- */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 1rem;
-}
-
-table th, table td {
-  padding: 0.75rem 1rem;
-  text-align: left;
-  border-bottom: 1px solid #E5E7EB; /* gray-200 */
-  font-size: 0.875rem;
-  color: #1F2937; /* gray-800 */
-}
-
-table th {
-  background-color: rgba(79,70,229,0.1); /* light purple header */
-  font-weight: 600;
-}
-
-tr:hover td {
-  background-color: rgba(79,70,229,0.05);
-}
-
-/* Color-coded links in drill-down tables */
-a.file-link {
-  text-decoration: none;
-  font-weight: 500;
-  transition: transform 0.15s ease, color 0.15s ease;
-}
-
-a.file-link:hover {
-  transform: translateX(2px);
-  color: #4F46E5;
-}
-
-/* -------------------------------
-   PDF / EXPORT BUTTONS
--------------------------------- */
+/* =============================================================================
+   EXPORT BUTTON (specific ID from your markup)
+   - styled to be prominent but consistent
+   ============================================================================= */
 #export-multi-class-pdf {
-  background-color: #4F46E5;
-  color: white;
-  font-weight: 500;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  transition: background 0.2s ease;
+  display:inline-flex; align-items:center; gap:.6rem;
+  padding: .6rem .9rem; border-radius: 12px; font-weight:700;
+  color:#fff; background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+  border:none; box-shadow: 0 10px 28px rgba(79,70,229,0.18);
+}
+#export-multi-class-pdf:hover { transform: translateY(-3px); }
+
+/* =============================================================================
+   SMALL COMPONENTS
+   ============================================================================= */
+/* pill badge */
+.badge {
+  display:inline-block; padding: .2rem .5rem; border-radius: 999px;
+  background: rgba(79,70,229,0.08); color: var(--primary-600); font-weight:600; font-size:.82rem;
 }
 
-#export-multi-class-pdf:hover {
-  background-color: #4338CA;
+/* small status pill */
+.status-ok { background: rgba(16,185,129,0.08); color: var(--accent-500); padding:.25rem .5rem; border-radius:999px; font-weight:600; }
+
+/* visually hidden (SR-only) */
+.sr-only, .visually-hidden {
+  position: absolute !important; height: 1px; width: 1px; overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px); white-space: nowrap;
 }
 
-/* -------------------------------
-   FOOTER
--------------------------------- */
-footer {
-  text-align: center;
-  padding: 1rem;
-  font-size: 0.875rem;
-  color: #6B7280; /* gray-500 */
+/* =============================================================================
+   UTILITIES (small subset; add more as needed)
+   ============================================================================= */
+.flex { display:flex; }
+.items-center { align-items:center; }
+.justify-between { justify-content:space-between; }
+.text-center { text-align:center; }
+.text-muted { color: var(--muted); }
+.mt-1 { margin-top: .25rem; } .mt-2 { margin-top: .5rem; } .mt-3 { margin-top: .75rem; }
+.p-2 { padding: .5rem; } .p-3 { padding: .75rem; }
+.rounded { border-radius: var(--radius-sm); }
+
+/* =============================================================================
+   RESPONSIVE BEHAVIOR
+   ============================================================================= */
+@media (max-width: 1080px) {
+  .bento-grid { gap: var(--space-md); }
+}
+@media (max-width: 720px) {
+  .header { padding: .5rem var(--space-sm); flex-direction: column; align-items:flex-start; gap:.5rem; }
+  .bento-grid { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+  .kpi .meta .value { font-size: 1.15rem; }
+  .bubble-btn { min-height: 40px; }
 }
 
-/* -------------------------------
-   RESPONSIVE MEDIA QUERIES
--------------------------------- */
-@media (max-width: 640px) {
-  .header { flex-direction: column; gap: 0.5rem; }
-  .dashboard { grid-template-columns: 1fr; }
-}
+/* =============================================================================
+   PERFORMANCE & MAINTENANCE NOTES (in-CSS doc)
+   - Split into component files for scale: tokens.css, components.css, utilities.css
+   - Use PostCSS + PurgeCSS (or Tailwind JIT) to remove unused utilities
+   - Use logical properties (padding-inline) if supporting RTL languages
+   - Consider using CSS container queries (future-proof) to make cards self-aware
+   ============================================================================= */
 
-/* -------------------------------
-   UTILITY CLASSES
--------------------------------- */
-.text-center { text-align: center; }
-.text-bold { font-weight: 600; }
-.mt-2 { margin-top: 0.5rem; }
-.mt-4 { margin-top: 1rem; }
-.p-4 { padding: 1rem; }
-.p-6 { padding: 1.5rem; }
-.shadow-lg { box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+/* =============================================================================
+   USAGE EXAMPLES (copy these into your HTML)
+   =============================================================================
+   <div class="bento-grid container">
+     <div class="bento-card bento-card--large">
+       <div class="kpi">
+         <div class="meta"><div class="label">Total Students</div><div class="value">124</div></div>
+         <canvas class="spark"></canvas>
+       </div>
+     </div>
 
-/* -------------------------------
-   ACTIONABLE RECOMMENDATIONS
--------------------------------- */
-/* 1. Keep colors and themes centralized in CSS variables for future multi-client theming. */
-/* 2. Consider CSS grid for dynamic KPI card layouts to improve responsiveness. */
-/* 3. Use lightweight transitions for hover effects for performance on mobile devices. */
-/* 4. All cards and buttons use glassmorphism and shadows for consistency; extend to modals if added. */
-/* 5. Add :focus-visible for accessibility for keyboard navigation. */
-/* 6. Consider splitting into multiple CSS files for modularity in large projects. */
-/* 7. Lazy-load chart canvas styles only when charts are generated for memory/performance optimization. */
+     <div class="bento-card">
+       <button class="bubble-btn" data-emoji="🎓">Students</button>
+     </div>
+
+     <div class="bento-card bento-card--feature">
+       <h3>Attendance</h3>
+       <div class="canvas-wrap"><canvas id="attendanceChart"></canvas></div>
+     </div>
+   </div>
+
+   <!-- bubble variants -->
+   <button class="bubble-btn bubble-btn--lg bubble-btn--accent" data-emoji="📊">Analytics</button>
+   <button class="bubble-btn bubble-btn--ghost" data-emoji="⚙️">Settings</button>
+   <button id="export-multi-class-pdf" class="bubble-btn bubble-btn--lg" data-emoji="📤">Export PDF</button>
+   ============================================================================= */
