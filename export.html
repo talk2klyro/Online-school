@@ -69,6 +69,24 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
 
+    .card h2 {
+      margin-top: 0;
+      font-size: 18px;
+      margin-bottom: 12px;
+    }
+
+    /* Input */
+    .input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(200, 200, 200, 0.5);
+      background: rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(6px);
+      margin: 6px 0 14px;
+      font-size: 14px;
+    }
+
     /* Button */
     .btn {
       padding: 10px 16px;
@@ -116,7 +134,22 @@
 
   <!-- Export Card -->
   <div class="card">
-    <button class="btn" onclick="exportCSV()">Download Attendance CSV</button>
+    <h2>Select Export Options</h2>
+    <label>From Date:</label>
+    <input type="date" class="input" id="fromDate">
+
+    <label>To Date:</label>
+    <input type="date" class="input" id="toDate">
+
+    <label>Export Format:</label>
+    <select class="input" id="format">
+      <option value="csv">CSV (Excel Compatible)</option>
+      <option value="xlsx">Excel (.xlsx)</option>
+      <option value="pdf">PDF Report</option>
+    </select>
+
+    <button class="btn" onclick="exportAttendance()">Download</button>
+    <p id="msg"></p>
   </div>
 
   <!-- Footer -->
@@ -126,8 +159,19 @@
 
   <!-- Script -->
   <script>
-    function exportCSV() {
-      window.location = '/api/export';
+    function exportAttendance() {
+      const from = document.getElementById('fromDate').value;
+      const to = document.getElementById('toDate').value;
+      const format = document.getElementById('format').value;
+
+      if (!from || !to) {
+        document.getElementById('msg').textContent = "⚠️ Please select a date range.";
+        return;
+      }
+
+      // Build download link
+      const url = `/api/export?from=${from}&to=${to}&format=${format}`;
+      window.location = url;
     }
   </script>
 </body>
