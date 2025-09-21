@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile | School Admin SaaS</title>
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Magic SDK -->
+  <script type="module">
+    import { Magic } from 'https://cdn.jsdelivr.net/npm/magic-sdk/dist/magic.js';
+    window.magic = new Magic(import.meta.env.VITE_MAGIC_KEY);
+  </script>
+</head>
+<body>
+  <!-- Header -->
+  <header class="brand glass-card">
+    <h1>My Profile</h1>
+  </header>
+
+  <!-- Navigation -->
+  <nav class="nav glass-card">
+    <a href="index.html">Dashboard</a>
+    <a href="attendance.html">Attendance</a>
+    <a href="export.html">Reports</a>
+    <a href="profile.html" class="active">Profile</a>
+    <a href="#" id="logoutBtn">Logout</a>
+  </nav>
+
+  <!-- Profile Card -->
+  <main class="auth-container">
+    <div class="auth-card glass-card">
+      <h2>👤 Account Details</h2>
+
+      <form id="profileForm">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" required />
+
+        <label for="email">Email Address</label>
+        <input type="email" id="email" disabled />
+
+        <label for="role">Role</label>
+        <input type="text" id="role" disabled />
+
+        <label for="phone">Phone</label>
+        <input type="tel" id="phone" placeholder="+1234567890" />
+
+        <button type="submit" class="btn-primary">Update Profile</button>
+      </form>
+
+      <div id="message" class="message"></div>
+    </div>
+  </main>
+
+  <!-- Script -->
+  <script type="module">
+    const form = document.getElementById('profileForm');
+    const messageBox = document.getElementById('message');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    async function loadProfile() {
+      try {
+        const res = await fetch('/api/profile', { method: 'GET' });
+        if (!res.ok) throw new Error("Failed to fetch profile");
+        const user = await res.json();
+
+        document.getElementById('name').value = user.name || "";
+        document.getElementById('email').value = user.email || "";
+        document.getElementById('role').value = user.role || "";
+        document.getElementById('phone').value = user.phone || "";
+      } catch (err) {
+        console.error("Error loading profile:", err);
+        messageBox.textContent = "❌ Could not load profile.";
+      }
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value;
+      const phone = document.getElementById('phone').value;
+
+      try {
+        messageBox.textContent = "Updating profile...";
+
+        const res = await fetch('/api/profile', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, phone })
+        });
+
+        if (!res.ok) throw new Error("Update failed");
+
+        messageBox.textContent = "✅ Profile updated successfully!";
+      } catch (err) {
+        console.error("Update error:", err);
+        messageBox.textContent = "❌ Failed to update profile.";
+      }
+    });
+
+    logoutBtn.addEventListener('click', async () => {
+      await window.magic.user.logout();
+      window.location.href = "login.html";
+    });
+
+    loadProfile();
+  </script>
+</body>
+</html>
